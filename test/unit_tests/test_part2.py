@@ -1,7 +1,6 @@
 import requests
 import json
-from support.assertions import assert_valid_json_schema, assert_valid_dictionary_schema, \
-    get_valid_dictionary_schema, get_valid_json_schema
+from test.unit_tests.support.assertions import *
 
 
 def test_get_projects_return_code():

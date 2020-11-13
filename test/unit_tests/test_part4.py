@@ -1,8 +1,7 @@
 import requests
 import json
-import pytest
 
-const_file = open('test/resources/test4-constants.json',)
+const_file = open('test/unit_tests/resources/test4-constants.json',)
 TEST4_CONSTANTS = json.load(const_file)
 
 # Tests for HEAD /categories/:id

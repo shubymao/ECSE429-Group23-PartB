@@ -1,9 +1,10 @@
 import requests
 import json
 
-from support.assertions import get_xml_file
+from test.unit_tests.support.assertions import *
 
-const_file = open('test/resources/test1-constants.json',)
+
+const_file = open('test/unit_tests/resources/test1-constants.json',)
 TEST1_CONSTANTS = json.load(const_file)
 
 

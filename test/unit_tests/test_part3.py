@@ -1,10 +1,7 @@
 import requests
 import json
-import pytest
-from operator import attrgetter
 
-
-const_file = open('test/resources/test3-constants.json',)
+const_file = open('test/unit_tests/resources/test3-constants.json',)
 TEST3_CONSTANTS = json.load(const_file)
 baseUrl = "http://localhost:4567"
 # GET /todos/:id/categories
