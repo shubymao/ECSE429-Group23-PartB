@@ -40,7 +40,7 @@ Feature: Create a TODO List
       | somethingunrelatedtoMcGill |
 
   Scenario Outline: Create a task for a non existing class
-    Given I can see a list with "<course>"within the application
+    Given I can see a list with "<course>" within the application
     When I add a new task entry to "<course>"
     Then the application should return an error message
     And the application should drop my request
