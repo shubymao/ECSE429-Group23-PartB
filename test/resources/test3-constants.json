@@ -1,0 +1,81 @@
+{
+    "EXPECTED_GET_TODOS_WITH_ID_CATEGORY": {
+        "categories": [
+            {
+                "id": "1",
+                "title": "Office",
+                "description": ""
+            }
+        ]
+    },
+    "NEW_TODOS_CATEGORY": {
+        "title": "School",
+        "description": "school cathegory"
+    },
+    "EXPECTED_NEW_TODOS_CATEGORY": {
+        "id": "3",
+        "title": "School",
+        "description": "school cathegory"
+    },
+    "EXPECTED_GET_PROJECTS_WITH_ID_CATEGORY": {
+        "categories": []
+    },
+    "NEW_PROJECTS_CATEGORY": {
+        "id": 2
+    },
+    "EXPECTED_NEW_PROJECTS_CATEGORY": {
+        "categories": [
+            {
+                "id": "2",
+                "title": "Home",
+                "description": ""
+            }
+        ]
+    },
+    "NEW_PROJECT": {
+        "title": "new project"
+    },
+    "PROJECT_ID": {
+        "id": "2"
+    },
+    "EXPECTED_GET_CATEGORY": {
+        "categories": [
+            {
+                "id": "1",
+                "title": "Office",
+                "description": ""
+            },
+            {
+                "id": "2",
+                "title": "Home",
+                "description": ""
+            }
+        ]
+    },
+    "NEW_CATEGORY": {
+        "title": "new cathegory",
+        "description": "new cathegory"
+    },
+    "EXPECTED_NEW_CATEGORY": {
+        "categories": [
+            {
+                "id": "3",
+                "title": "new cathegory",
+                "description": "new cathegory"
+            }
+        ]
+    },
+    "EXPECTED_GET_CATEGORY_ID": {
+        "categories": [
+            {
+                "id": "1",
+                "title": "Office",
+                "description": ""
+            }
+        ]
+    },
+    "EXPECTED_STATUS_CODE_200": 200,
+    "EXPECTED_STATUS_CODE_201": 201,
+    "EXPECTED_STATUS_CODE_404": 404,
+    "EXPECTED_STATUS_CODE_405": 405
+}

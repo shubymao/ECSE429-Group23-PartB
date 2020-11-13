@@ -1,0 +1,57 @@
+{
+    "EXPECTED_GET_CATEGORIES_TODOS": {
+        "todos": []
+    },
+    "EXPECTED_GET_CATEGORIES_PROJECTS":{
+        "projects": []
+    },
+    "UPDATE_CATEGORIES": {
+        "title": "Jungle",
+        "description": "into the wild"
+    },
+    "EXPECTED_CATEGORIES": {
+        "id": "1",
+        "title": "Jungle",
+        "description": "into the wild"
+    },
+    "UPDATE_CATEGORIES_TODOS": {
+        "title": "new category-todo"
+    },
+    "EXPECTED_CATEGORIES_TODOS": {
+        "id": "3",
+        "title": "new category-todo",
+        "doneStatus": "false",
+        "description": ""
+    },
+    "UPDATE_CATEGORIES_PROJECTS": {
+        "title": "sevenSwap"
+    },
+    "EXPECTED_CATEGORIES_PROJECTS": {
+        "id": "2",
+        "title": "sevenSwap",
+        "completed": "false",
+        "active": "false",
+        "description": ""
+    },
+    "UPDATE_PUT_CATEGORIES": {   
+        "title": "in the clouds",
+        "description": "the put adjustments"
+    },
+    "EXPECTED_PUT_CATEGORIES": {
+        "id": "1",
+        "title": "in the clouds",
+        "description": "the put adjustments"
+    },
+    "NEW_TODOS_CATEGORIES": {
+        "title": "form new"
+    },
+    "EXPECTED_NEW_TODOS_CATEGORIES": {
+        "id": "3",
+        "title": "form new",
+        "doneStatus": "false",
+        "description": ""
+    },
+    "NEW_DELETE_ID": {
+        "id": "1"
+    }
+}
