@@ -9,7 +9,6 @@ scenarios('../features/CreateTodoList.feature')
 @given(parsers.parse('the system is running'))
 def theSystemIsSetup():
     assert True
-#  is used for indication that it's a number
 @given(parsers.parse('the task with id {id} exists'))
 def checkOrCreateTodo(id):
     assert True
