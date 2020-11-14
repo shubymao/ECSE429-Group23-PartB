@@ -6,8 +6,8 @@ import requests
 import json
 
 # Finished scenarios: adjust priority, 
-# scenarios('../features/AdjustPriority.feature')
-# scenarios('../features/ChangeDescription.feature')
+scenarios('../features/AdjustPriority.feature')
+scenarios('../features/ChangeDescription.feature')
 # scenarios('../features/CreateTodoList.feature')
 # scenarios('../features/RemoveTodoList.feature')
 
@@ -63,8 +63,8 @@ def checkOrRemoveTodo(id):
         r = requests.get(url=f'http://localhost:4567/todos/{id}')
         assert r.status_code == 404
 
-@ given(parsers.parse('the task with id {id} has no description'))
-def checkOrRemoveTodoDescription(id):
+@ given(parsers.parse('the task has no description'))
+def checkOrRemoveTodoDescription():
     assert True
 
 @ given(parsers.parse('the task has "{priority}" priority'))
@@ -82,9 +82,16 @@ def checkOrSetTodoPriority(priority):
     assert exist
 
 
-@ given(parsers.parse('the task with id {id} has description of "{description}"'))
-def checkOrSetTodoDescription(id, description):
-    assert True
+@ given(parsers.parse('the task has description of "{description}"'))
+def checkOrSetTodoDescription(description):
+    body = {'description': description}
+    url = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}'
+    r = requests.post(url=url, json=body)
+    assert r.status_code == 200
+    r = requests.get(
+        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}')
+    assert r.status_code == 200
+    assert r.json()['todos'][0]['description'] == description
 
 
 @ given(parsers.parse('I can see a list with <course> within the application'))
@@ -141,12 +148,24 @@ def changeTaskPriorityWithID(id, priority):
     body = {'id': GLOBAL_CONTEXT.category_id}
     r = requests.post(
         url=f'http://localhost:4567/todos/{id}/categories', json=body)
-    assert r.status_code == 404
+    
     GLOBAL_CONTEXT.response_json = r.json()
+    GLOBAL_CONTEXT.status_code = r.status_code
 
-@ when(parsers.parse('the student change description of task with id {id} to "{description}"'))
-def changeTaskDescription(id, description):
-    assert True
+@ when(parsers.parse('the student change description of task to "{description}"'))
+def changeTaskDescription(description):
+    body = {'description': description}
+    r = requests.post(
+        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
+    assert r.status_code == 200
+
+@when(parsers.parse('the student change description of task with id {id} to "{description}"'))
+def changeTaskDescription(id,description):
+    body = {'description': description}
+    r = requests.post(
+        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
+    GLOBAL_CONTEXT.response_json = r.json()
+    GLOBAL_CONTEXT.status_code = r.status_code
 
 
 @ when(parsers.parse('I add a new task entry to <course>'))
@@ -209,18 +228,18 @@ def checkIfTaskHasPriority(priority):
 
 @ then(parsers.parse('the system shall inform the user that the task doesn\'t exist'))
 def checkIfMessageEqualsTaskDoNotExist():
-    expected_message = 'Could not find parent thing for relationship'
-    print(GLOBAL_CONTEXT.response_json)
-    assert expected_message in GLOBAL_CONTEXT.response_json['errorMessages'][0]
+    assert GLOBAL_CONTEXT.status_code == 404
 
 @ then(parsers.parse('the priority status should stay the same'))
 def checkIfPriorityStaySame():
     assert True
 
 
-@ then(parsers.parse('the description of the task with {id} should be "{description}"'))
-def checkTaskDescriptionEqual(id, description):
-    assert True
+@ then(parsers.parse('the description of the task should be "{description}"'))
+def checkTaskDescriptionEqual(description):
+    r = requests.get(f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}')
+    assert r.status_code == 200
+    assert r.json()['todos'][0]['description']==description
 
 
 @ then(parsers.parse('I should not see any duplicate entries named <course> within the application'))

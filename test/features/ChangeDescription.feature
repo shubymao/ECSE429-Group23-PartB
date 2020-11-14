@@ -4,28 +4,28 @@ Feature: Change Description
 
   Scenario Outline: Student changed description on tasks with description(Normal Flow)
     Given the system is running
-    And the task with id <id> exists
-    And the task with id <id> has description of "<oldDescription>"
-    When the student change description of task with id <id> to "<newDescription>"
-    Then the priority of the task with <id> should be "<newDescription>"
+    And the task with title "<title>" exists
+    And the task has description of "<oldDescription>"
+    When the student change description of task to "<newDescription>"
+    Then the description of the task should be "<newDescription>"
     Examples:
-      | id | oldDescription        | newDescription             |
-      | 1  | hello world           | some coding event          |
-      | 1  | bad event             | terrible event             |
-      | 1  | terrible life choices | why is this still not done |
-      | 1  | wonderful task        | almost finished!!!         |
+      | title                  | oldDescription        | newDescription             |
+      | group project          | assign first meeting  | assign member task         |
+      | assignment             | bad event             | terrible event             |
+      | programming assignment | terrible life choices | why is this still not done |
+      | term paper             | wonderful task        | almost finished!!!         |
 
   Scenario Outline: Student change description on tasks no existing description(Alt Flow)
     Given the system is running
-    And the task with id <id> exists
-    And the task with id <id> has no description
-    When the student change description of task with id <id> to "<newDescription>"
-    Then the description of the task with <id> should be "<newDescription>"
+    And the task with title "<title>" exists
+    And the task has no description
+    When the student change description of task to "<newDescription>"
+    Then the description of the task should be "<newDescription>"
     Examples:
-      | id | newDescription             |
-      | 1  | what a bait                |
-      | 1  | will this ever be finished |
-      | 1  | archived todos             |
+      | title                 | newDescription             |
+      | open source project   | what a bait                |
+      | TA assignment marking | will this ever be finished |
+      | overdue assignment    | archived task              |
 
   Scenario Outline: Student changed description on non-existing task (Error Flow)
     Given the system is running
@@ -36,4 +36,4 @@ Feature: Change Description
       | id   | newDescription              |
       | 5000 | Totally a thing             |
       | 9999 | Yep totally have 9999 todos |
-      | 1595 | why is this todo here       |
+      | 1595 | is this for real!!!         |
