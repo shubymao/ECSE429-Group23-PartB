@@ -4,6 +4,10 @@ import os
 import requests
 import socket
 
+class GLOBAL_ID:
+    todoId = None
+    categoryId = None
+
 @pytest.fixture(autouse=True, scope="function")
 def setup():
     subprocess.Popen(['java', '-jar', os.environ['JAR_PATH']])
