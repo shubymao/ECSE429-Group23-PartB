@@ -5,11 +5,11 @@ Feature: Adjust Priority
   Scenario Outline: Student changed priority to a different priority (Normal Flow)
     Given the system is running
     And the task with title <title> exists
-    And the task has <oldPriority> priority
+    And the task has <old_priority> priority
     When the student change task to <new_priority> priority
     Then the priority of the task should be <new_priority>
     Examples:
-      | title                  | oldPriority | new_priority |
+      | title                  | old_priority | new_priority |
       | group project          | LOW         | HIGH        |
       | large assignment       | MEDIUM      | HIGH        |
       | programming assignment | LOW         | MEDIUM      |
@@ -20,11 +20,11 @@ Feature: Adjust Priority
   Scenario Outline: Student changed priority to the same priority (Alt Flow)
     Given the system is running
     And the task with title <title> exists
-    And the task has <oldPriority> priority
+    And the task has <old_priority> priority
     When the student change task to <new_priority> priority
     Then the priority of the task should be <new_priority>
     Examples:
-      | title                  | oldPriority | new_priority |
+      | title                  | old_priority | new_priority |
       | some small assignment  | LOW         | LOW         |
       | some medium assignment | MEDIUM      | MEDIUM      |
       | some large assignment  | HIGH        | HIGH        |
