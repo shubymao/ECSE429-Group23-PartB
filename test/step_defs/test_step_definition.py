@@ -1,67 +1,93 @@
 import socket
+
 import pytest
-from pytest_bdd import scenarios, given, when, then, parsers
-from conftest import GLOBAL_CONTEXT
 import requests
-import json
+from pytest_bdd import scenarios, given, when, then, parsers
+
+from conftest import GLOBAL_CONTEXT
 
 # Finished scenarios: Adjust priority, Change Description
 
-scenarios('../features/AssignPriority.feature')
-scenarios('../features/AdjustPriority.feature')
-scenarios('../features/ChangeDescription.feature')
+#scenarios('../features/AssignPriority.feature')
+#scenarios('../features/AdjustPriority.feature')
+#scenarios('../features/ChangeDescription.feature')
+
+
 # scenarios('../features/CreateTodoList.feature')
-# scenarios('../features/RemoveTodoList.feature')
+scenarios('../features/RemoveTodoList.feature')
 
 @pytest.fixture(scope='function')
 def context():
     return {}
+
 
 @given('the system is running')
 def the_system_is_setup():
     assert socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(
         ("localhost", 4567)) == 0
 
+
 @given('the task with title <title> exists')
 def check_or_create_todo_with_title(title):
     r = requests.get(url=f"http://localhost:4567/todos?title={title}")
-    if(len(r.json()['todos']) == 0):
+    if (len(r.json()['todos']) == 0):
         body = {'title': title}
         requests.post(url="http://localhost:4567/todos", json=body)
     r = requests.get(url=f"http://localhost:4567/todos?title={title}")
     assert len(r.json()['todos']) > 0
     GLOBAL_CONTEXT.todo_id = str(r.json()['todos'][0]['id'])
 
-@given(parsers.parse('the system contains a to do list with entry id {id}'))
+
+@given(parsers.parse('the system contains a to do list with entry id <id>'))
 def ensure_category_with_id_exists(id):
     assert True
 
-@given(parsers.parse('the system does not contain a to do list with entry id {id}'))
+
+@given(parsers.parse('the system does not contain a to do list with entry id <id>'))
 def ensure_category_with_id_does_not_exist(id):
     assert True
 
-@given(parsers.parse('<course> contains an entry'))
+
+@given(parsers.parse('<course> contains at least one entry'))
 def ensure_an_entry_exists_within_course(course):
-    raise NotImplementedError
+    r = requests.get("http://localhost:4567/categories")
+    for category in r.json()['categories']:
+        if category['title'] == course:
+            try:
+                if len(category['todos']) >= 1:
+                    assert True
+                    return
+            except KeyError:
+                requests.post(f"http://localhost:4567/categories/{category['id']}/todos",
+                              json={"title": "Example task here!"})
+                assert True
+                return
+
 
 @given(parsers.parse('{name} contains an entry'))
 def add_todo_to_category(name):
     assert True
 
+
 @given(parsers.parse('the to do list called <course> contains no tasks'))
 def ensure_category_has_no_tasks(course):
-    raise NotImplementedError
+    r = requests.get("http://localhost:4567/categories")
+    for category in r.json()['categories']:
+        if category['title'] == course:
+            assert 'todos' not in category
+
 
 @given('the task with id <task_id> does not exists')
 def check_or_remove_todo(task_id):
     r = requests.get(url=f'http://localhost:4567/todos/{task_id}')
-    if(r.status_code != 404):
+    if (r.status_code != 404):
         r = requests.delete(url=f'http://localhost:4567/todos/{task_id}')
         assert r.status_code == 200
         r = requests.get(url=f'http://localhost:4567/todos/{task_id}')
         assert r.status_code == 404
 
-@ given('the task has description of <old_description>')
+
+@given('the task has description of <old_description>')
 def check_or_set_todo_description(description):
     body = {'description': description}
     url = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}'
@@ -72,6 +98,7 @@ def check_or_set_todo_description(description):
     assert r.status_code == 200
     assert r.json()['todos'][0]['description'] == description
 
+
 @given(parsers.parse('the task has no description'))
 def check_or_remove_todo_description():
     body = {'description': ''}
@@ -79,6 +106,7 @@ def check_or_remove_todo_description():
     r = requests.post(url=url, json=body)
     assert r.status_code == 200
     assert r.json()['description'] == ''
+
 
 @given(parsers.parse('the task has <old_priority> priority'))
 def check_or_set_todo_priority(old_priority):
@@ -94,6 +122,7 @@ def check_or_set_todo_priority(old_priority):
         filter(lambda x: x['id'] == GLOBAL_CONTEXT.category_id, r.json()['categories']))) > 0
     assert exist
 
+
 @given(parsers.parse('the following tasks exists:\n{datatable}'))
 def create_tasks_with_title_and_priority(datatable):
     tasks = datatable.splitlines()
@@ -103,13 +132,15 @@ def create_tasks_with_title_and_priority(datatable):
         priority_id = check_or_create_todo_priority(item[2].strip())
         assign_priority_to_task(task_id, priority_id)
 
-@ given(parsers.parse('I can see a list with <course> within the application'))
+
+@given(parsers.parse('I can see a list with <course> within the application'))
 def initialize_existing_category(course, context):
     add_category_no_conflict(course, context)
     get_categories(course, context)
     assert True
 
-@ given(parsers.parse('I can see a list that does not include <course> within the application'))
+
+@given(parsers.parse('I can see a list that does not include <course> within the application'))
 def ensure_exclusion_of_class(course, context):
     r = requests.get("http://localhost:4567/categories")
     for category in r.json()['categories']:
@@ -117,27 +148,34 @@ def ensure_exclusion_of_class(course, context):
             assert False
     assert True
 
-@ when(parsers.parse('I delete an existing to do list named <course>'))
-def delete_existing_categories(course):
-    raise NotImplementedError
+
+@when(parsers.parse('I delete an existing to do list named <course>'))
+def delete_existing_categories(course, context):
+    r = requests.get("http://localhost:4567/categories")
+    for category in r.json()['categories']:
+        if category['title'] == course:
+            context['request_return'] = requests.delete(f"http://localhost:4567/categories/{category['id']}")
+            assert True
+            return
 
 
-@ when(parsers.parse('I delete <course>'))
-def delete_empty_categories(id):
-    raise NotImplementedError
+@when(parsers.parse('I delete a nonexistent to do list called <course>'))
+def delete_non_existent_categories(course, context):
+    r = requests.get("http://localhost:4567/categories")
+    for category in r.json()['categories']:
+        if category['title'] == course:
+            assert False
+    context['request_return'] = requests.delete("http://localhost:4567/categories/823472")
+    assert True
 
 
-@ when(parsers.parse('I delete a nonexistent to do list called <course>'))
-def delete_non_existent_categories(id):
-    raise NotImplementedError
-
-
-@ when(parsers.parse('I add a new course with title <course>'))
+@when(parsers.parse('I add a new course with title <course>'))
 def add_category_no_conflict(course, context):
     # Add new course with title <course>
     context['request_return'] = requests.post(
         "http://localhost:4567/categories", json={"title": course})
     assert context['request_return'].status_code == 201
+
 
 @when('the student assign task to <new_priority> priority')
 def assign_task_priority(new_priority):
@@ -147,7 +185,8 @@ def assign_task_priority(new_priority):
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/categories', json=body)
     assert r.status_code == 201
 
-@ when('the student change task to <new_priority> priority')
+
+@when('the student change task to <new_priority> priority')
 def change_task_priority(new_priority):
     r = requests.delete(
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/categories/{GLOBAL_CONTEXT.category_id}')
@@ -157,6 +196,7 @@ def change_task_priority(new_priority):
     r = requests.post(
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/categories', json=body)
     assert r.status_code == 201
+
 
 @when('the student change task with id <task_id> to <new_priority> priority')
 def change_task_priority_with_id(task_id, new_priority):
@@ -168,12 +208,14 @@ def change_task_priority_with_id(task_id, new_priority):
     GLOBAL_CONTEXT.response_json = r.json()
     GLOBAL_CONTEXT.status_code = r.status_code
 
+
 @when('the student change description of task to <description>')
 def change_task_description(description):
     body = {'description': description}
     r = requests.post(
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
     assert r.status_code == 200
+
 
 @when('the student change description of task with id <task_id> to <description>')
 def change_task_description(task_id, description):
@@ -182,12 +224,15 @@ def change_task_description(task_id, description):
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
     GLOBAL_CONTEXT.response_json = r.json()
     GLOBAL_CONTEXT.status_code = r.status_code
+
+
 @when('the student fetch the task with <target_priority> priority')
 def fetch_tasks_with_target_priority(target_priority):
     r = requests.get(
         f'http://localhost:4567/categories?title={target_priority}')
     assert r.status_code == 200
     GLOBAL_CONTEXT.response_json = r.json()
+
 
 @when(parsers.parse('I add a new task entry to <course>'))
 def add_todo_to_category(course, context):
@@ -208,23 +253,30 @@ def add_todo_to_category(course, context):
     assert context['task_return'].status_code in [201]
 
 
-@ then(parsers.parse('I should see the to do list entry <course>, disappear from the application'))
-def get_category():
-    raise NotImplementedError
+@then(parsers.parse('I should see the to do list entry <course>, disappear from the application'))
+def get_category(course):
+    r = requests.get("http://localhost:4567/categories")
+    for category in r.json()['categories']:
+        if category['title'] == course:
+            assert False
+    assert True
+    return
 
-@ then(parsers.parse('I should see a success message'))
+
+@then(parsers.parse('I should see a success message'))
 def assert_success_operation(context):
     assert context['request_return'].status_code in [200, 201]
 
 
-@ then(parsers.parse('I should see an error message'))
+@then(parsers.parse('I should see an error message'))
 def assert_failure_operation(context):
     try:
         assert context['request_return'].status_code not in [200, 201]
     except KeyError:
         assert context['task_return'].status_code not in [200, 201]
 
-@ then(parsers.parse('I should see a new list named <course> within the application'))
+
+@then(parsers.parse('I should see a new list named <course> within the application'))
 def get_categories(course, context):
     # Retrieve list of categories
     result = requests.get("http://localhost:4567/categories")
@@ -237,7 +289,8 @@ def get_categories(course, context):
             return
     assert False
 
-@ then('the priority of the task should be <new_priority>')
+
+@then('the priority of the task should be <new_priority>')
 def check_if_task_has_priority(new_priority):
     todo = GLOBAL_CONTEXT.todo_id
     r = requests.get(url=f'http://localhost:4567/todos/{todo}/categories')
@@ -249,18 +302,20 @@ def check_if_task_has_priority(new_priority):
     assert r.status_code == 200
     assert r.json()['categories'][0]['title'] == new_priority
 
-@ then(parsers.parse('the system shall inform the user that the task doesn\'t exist'))
+
+@then(parsers.parse('the system shall inform the user that the task doesn\'t exist'))
 def check_if_message_equals_task_do_not_exist():
     assert GLOBAL_CONTEXT.status_code == 404
 
-@ then(parsers.parse('the description of the task should be <description>'))
+
+@then(parsers.parse('the description of the task should be <description>'))
 def check_task_description_equal(description):
     r = requests.get(f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}')
     assert r.status_code == 200
     assert r.json()['todos'][0]['description'] == description
 
 
-@ then(parsers.parse('I should not see any duplicate entries named <course> within the application'))
+@then(parsers.parse('I should not see any duplicate entries named <course> within the application'))
 def check_uniqueness_category(course):
     result = requests.get("http://localhost:4567/categories")
 
@@ -272,7 +327,8 @@ def check_uniqueness_category(course):
             unique_count += 1
     assert unique_count == 1
 
-@ then(parsers.parse('I should see a new task in <course>'))
+
+@then(parsers.parse('I should see a new task in <course>'))
 def check_task_added(course, context):
     r = requests.get(
         "http://localhost:4567/categories/['request_return']['id']/projects")
@@ -283,10 +339,12 @@ def check_task_added(course, context):
             return
     assert False
 
+
 @then('the system should display <expected_task_count> number of task')
 def check_the_displayed_tasks(expected_task_count):
     todos = GLOBAL_CONTEXT.response_json['categories'][0]['todos']
     assert len(todos) == int(expected_task_count)
+
 
 # Helper functions
 
@@ -296,6 +354,7 @@ def create_task(title):
     assert r.status_code == 201
     return r.json()['id']
 
+
 def assign_priority_to_task(task_id, priority_id):
     body = {'id': priority_id}
     r = requests.post(
@@ -304,9 +363,10 @@ def assign_priority_to_task(task_id, priority_id):
     r = requests.post(
         url=f'http://localhost:4567/categories/{priority_id}/todos', json=body)
 
+
 def check_or_create_todo_priority(priority):
     r = requests.get(url=f"http://localhost:4567/categories?title={priority}")
-    if(len(r.json()['categories']) == 0):
+    if (len(r.json()['categories']) == 0):
         body = {'title': priority}
         requests.post(url="http://localhost:4567/categories", json=body)
     r = requests.get(url=f"http://localhost:4567/categories?title={priority}")

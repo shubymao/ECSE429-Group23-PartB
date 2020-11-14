@@ -5,7 +5,7 @@ Feature: Delete a todo list
   Scenario Outline: Delete a to do list for a class with tasks still left in it
     Given the system is running
     And I can see a list with <course> within the application
-    And <course> contains an entry
+    And <course> contains at least one entry
     When I delete an existing to do list named <course>
     Then I should see the to do list entry <course>, disappear from the application
     And I should see a success message
@@ -19,11 +19,11 @@ Feature: Delete a todo list
     Given the system is running
     And I can see a list with <course> within the application
     And the to do list called <course> contains no tasks
-    When I delete <course>
+    When I delete an existing to do list named <course>
     Then I should see the to do list entry <course>, disappear from the application
     And I should see a success message
     Examples:
-      | name |
+      | course |
       | wah  |
       | gah  |
     # TODO: not sure what to do here for success.
