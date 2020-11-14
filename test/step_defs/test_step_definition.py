@@ -49,7 +49,7 @@ def add_todo_to_category(name):
     assert True
 
 @given(parsers.parse('the to do list called <course> contains no tasks'))
-def ensure_category_has_no_tasks(categoryID):
+def ensure_category_has_no_tasks(course):
     raise NotImplementedError
 
 @given('the task with id <task_id> does not exists')
