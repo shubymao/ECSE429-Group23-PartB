@@ -4,9 +4,10 @@ import os
 import requests
 import socket
 
-class GLOBAL_ID:
-    todoId = None
-    categoryId = None
+class GLOBAL_CONTEXT:
+    todo_id = None
+    category_id = None
+    response_json = None
 
 @pytest.fixture(autouse=True, scope="function")
 def setup():
