@@ -15,7 +15,6 @@ scenarios('../features/AdjustPriority.feature')
 def context():
     return {}
 
-
 @given(parsers.parse('the system is running'))
 def theSystemIsSetup():
     assert socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(("localhost", 4567)) == 0
@@ -232,6 +231,15 @@ def checkUniquenessCategory(course):
             unique_count += 1
     assert unique_count == 1
 
+@then(parsers.parse('I should see a new task in <course>'))
+def checkTaskAdded(course, context):
+    r = requests.get("http://localhost:4567/categories/['request_return']['id']/projects")
+    for project in r.json()['projects']:
+        if project['title'] == context['task_return'].json()['title'] and \
+                project['id'] == context['task_return'].json()['id']:
+            assert True
+            return
+    assert False
 
 # Helper functions
 
@@ -243,13 +251,3 @@ def checkOrCreateTodoPriority(priority):
     r = requests.get(url= f"http://localhost:4567/categories?title={priority}")
     GLOBAL_ID.categoryId = str(r.json()['categories'][0]['id'])
     assert len(r.json()['categories'])>0
-    
-@then(parsers.parse('I should see a new task in <course>'))
-def checkTaskAdded(course, context):
-    r = requests.get("http://localhost:4567/categories/['request_return']['id']/projects")
-    for project in r.json()['projects']:
-        if project['title'] == context['task_return'].json()['title'] and \
-                project['id'] == context['task_return'].json()['id']:
-            assert True
-            return
-    assert False
