@@ -1,40 +1,40 @@
 Feature: Delete a todo list
   As a student,
-  I remove a to do list for a class which I am no longer taking, to declutter my schedule.
+  I remove a to do list for a class which I am no longer taking, to de-clutter my schedule.
 
-  Scenario Outline: Delete a to do list for a class with tasks in it
+  Scenario Outline: Delete a to do list for a class with tasks still left in it
     Given the system is running
-    And the system contains a to do list with entry id <id>
-    And entry id <id> with taskID "<taskid>" exists
-    When I delete an existing to do list with id <id>
-    Then I should see the to do list entry with id <id> disappear from the application
+    And I can see a list with <course> within the application
+    And <course> contains an entry
+    When I delete an existing to do list named <course>
+    Then I should see the to do list entry <course>, disappear from the application
     And I should see a success message
     Examples:
-      | id | taskid |
-      | 1  | 3      |
-      | 2  | 3      |
+      | course |
+      | test  |
+      | something  |
     #TODO: Not sure what to do here for success.
 
   Scenario Outline: Delete a to do list for a class with no tasks in it
     Given the system is running
-    And the system contains a to do list with entry id <id>
-    And entry id <id> contains no tasks
-    When I delete an empty to do list with id <id>
-    Then I should see the to do list entry with id <id> disappear from the application
+    And I can see a list with <course> within the application
+    And the to do list called <course> contains no tasks
+    When I delete <course>
+    Then I should see the to do list entry <course>, disappear from the application
     And I should see a success message
     Examples:
-      | id |
-      | 1  |
-      | 2  |
+      | name |
+      | wah  |
+      | gah  |
     # TODO: not sure what to do here for success.
 
   Scenario Outline: Delete a to do list which does not exist
     Given the system is running
-    And a to do list with id <id> does not exist
-    When I delete a nonexistent to do list with id <id>
+    And I can see a list that does not include <course> within the application
+    When I delete a nonexistent to do list called <course>
     Then I should see an error message
     Examples:
-      | id |
-      | 55 |
-      | 22 |
+      | course |
+      | test |
+      | ok |
     # TODO: not sure what to do here for failure
