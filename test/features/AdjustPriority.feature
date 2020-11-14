@@ -40,6 +40,6 @@ Feature: Adjust Priority
 
     Examples:
       | id   | newPriority |
-      | 5000 | HIGH        |
-      | 9999 | HIGH        |
+      | 5000 | LOW         |
+      | 9999 | MEDIUM      |
       | 1595 | HIGH        |
