@@ -1,5 +1,5 @@
-# ECSE429 Project Part A
-Project A
+# ECSE429 Project Part B
+Project B
 ## Installing the Dependency
 1. (Optional) create a virtual environment using virtualenv or python -m venv 
 2. pip (or pip3) -r install requirement.txt
