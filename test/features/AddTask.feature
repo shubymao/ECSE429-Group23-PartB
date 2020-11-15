@@ -7,8 +7,8 @@ Feature: Adding a task to a todo list
 
   Scenario Outline: Adding a task to a course to do list (Normal Flow)
     Given there exists a todo list in the system with title <course> 
-    When I add a new task with title <title> to the list with title <course> 
-    Then I will see a new task with title <title> in the list with title <course>
+    When I add a new task with title <title> to the todo list with title <course> 
+    Then I will see a new task with title <title> in the todo list with title <course>
      
      Examples:
       | title                        |
@@ -19,8 +19,8 @@ Feature: Adding a task to a todo list
 
    Scenario Outline: Adding an already existing task to the to do list (Alternate Flow) 
     Given there exists a todo list in the system with title <course> 
-    When I add a new task with title <title> to the list with title <course> 
-    Then I will see a new task with title <title> in the list with title <course>
+    When I add a new task with title <title> to the todo list with title <course> 
+    Then I will see a new task with title <title> in the todo list with title <course>
      
      Examples:
       | title                        |
@@ -29,6 +29,6 @@ Feature: Adding a task to a todo list
 
    Scenario Outline: Adding a task on a todo list that doesn't exist (Error Flow)
     Given there does not exist a todo list in the system with title <course> 
-    When I add a new task with title <title> to the list with title <course> 
-    Then the system will inform the user that the list does not exist  
+    When I add a new task with title <title> to the todo list with title <course> 
+    Then the system will inform the user that the todo list does not exist  
 
