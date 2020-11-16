@@ -8,7 +8,7 @@ Feature: Marking a task on a todo list
   Scenario Outline: Marking a completed task as done on a todo list (Normal Flow)
     Given there exists a todo list in the system with title <course>
     And the todo list contains the task with title <title>
-    And the current progress <progress> of the task is "Incomplete"
+    And the current progress <progress> of the task with <title> is "Incomplete"
     When I change the progress <progress> of the task with title <title> to "Complete"
     Then the progress of the task <title> should be "Complete"
 
@@ -21,7 +21,7 @@ Feature: Marking a task on a todo list
   Scenario Outline: Marking an Already-Completed Task as Done (Alternate Flow)
     Given there exists a todo list in the system with title <course>
     And the todo list contains the task with title <title>
-    And the current progress <progress> of the task is "Complete"
+    And the current progress <progress> of the task with <title> is "Complete"
     When I change the progress <progress> of the task with title <title> to "Complete"
     Then the progress of the task <title> should be "Complete"
 

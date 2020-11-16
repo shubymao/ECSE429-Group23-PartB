@@ -412,9 +412,6 @@ def get_error_response(course):
 ##############
 @given('the todo list contains the task with title <title>')
 def ensure_todos_list_contains_task_with_title_title(title):
-    if GLOBAL_CONTEXT.todo_id == -1:
-        assert False
-        return
     urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
     r = requests.get(url=urlPost)
     assert r.status_code == 200
@@ -422,18 +419,15 @@ def ensure_todos_list_contains_task_with_title_title(title):
         if task['title'] == title:
             assert True
             return
-    body = {'title': title}
+    body = {"title": title}
     req = requests.post(urlPost, json = body)
     GLOBAL_CONTEXT.task_id = str(req.json()['id'])
 
     assert req.status_code == 201
     assert req.json()['title'] == title
 
-@given('the current progress <progress> of the task is "Incomplete"')
-def ensure_task_progress_is_incomplete(title, progress):
-    if GLOBAL_CONTEXT.todo_id == -1 or GLOBAL_CONTEXT.todo_id == None:
-        assert False
-        return
+@given('the current progress <progress> of the task with <title> is "Incomplete"')
+def ensure_task_progress_is_incomplete(progress, title):
     urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
     r = requests.get(url=urlPost)
     assert r.status_code == 200
@@ -442,7 +436,16 @@ def ensure_task_progress_is_incomplete(title, progress):
             assert task['completed'] == "false"
             return
     assert False
-
+@given('the current progress <progress> of the task with <title> is "Complete"')
+def ensure_task_progress_is_complete(progress, title):
+    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+    r = requests.get(url=urlPost)
+    assert r.status_code == 200
+    for task in r.json()['projects']:
+        if task['title'] == title:
+            assert task['completed'] == "true"
+            return
+    assert False
 @when('I change the progress <progress> of the task with title <title> to "Complete"')
 def change_task_progress_with_title_title(title, progress):
     value = True
@@ -450,44 +453,56 @@ def change_task_progress_with_title_title(title, progress):
         value = False
     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
     body = {
-        "id": GLOBAL_CONTEXT.task_id,
-        "completed": value
+        "id": GLOBAL_CONTEXT.task_id.__str__(),
+        "title": "title",
+        "completed": value,
+        "active": "true",
+        "description": ""
     }
+    print("HEREEE")
+    print(GLOBAL_CONTEXT.task_id)
+    req = requests.get(url=url)
+    for task in req.json()['projects']:
+        if task['title'] == title:
+            print(task)
     r = requests.post(url=url, json = body)
+    print(r.json())
     assert r.status_code == 201
 @then('the progress of the task <title> should be "Complete"')
-def task_progress_shaould_be_complete(title):
-    if GLOBAL_CONTEXT.todo_id == -1 or GLOBAL_CONTEXT.todo_id == None:
-        assert False
-        return
-    url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    r = requests.get(url=url)
-    for task in r.json()['projects']:
-        if task['title'] == title:
-            assert task['completed'] == "true"
-            return
+# def task_progress_shaould_be_complete(title):
+#     if GLOBAL_CONTEXT.todo_id == None:
+#         assert False
+#         return
+#     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+#     r = requests.get(url=url)
+#     print(r.json())
+#     print(GLOBAL_CONTEXT.task_id)
+#     for task in r.json()['projects']:
+#         if task['title'] == title:
+#             assert task['completed'] == "true"
+#             return
 @given('the todo list does not contain the task with title <title>')
-def ensure_todo_list_does_not_contain_task(title):
-    if GLOBAL_CONTEXT.todo_id == -1 or GLOBAL_CONTEXT.todo_id == None:
-        assert False
-        return
-    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    r = requests.get(url=urlPost)
-    for task in r.json()['projects']:
-        if task['title'] == title:
-            assert False
-    assert True
+# def ensure_todo_list_does_not_contain_task(title):
+#     if GLOBAL_CONTEXT.todo_id == None:
+#         assert False
+#         return
+#     urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+#     r = requests.get(url=urlPost)
+#     for task in r.json()['projects']:
+#         if task['title'] == title:
+#             assert False
+#     assert True
 
 @then('the system will inform the user that the task does not exist')
-def inform_user_task_does_not_exist():
-    url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    body = {
-        "id": "NONE-EXISTING-TASK",
-        "completed": True
-    }
-    r = requests.post(url=url, json = body)
-    r.status_code == 404
-    r.json()['errorMessages'][0] == "Could not find thing matching value for id"
+# def inform_user_task_does_not_exist():
+#     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+#     body = {
+#         "id": "NONE-EXISTING-TASK",
+#         "completed": True
+#     }
+#     r = requests.post(url=url, json = body)
+#     r.status_code == 404
+#     r.json()['errorMessages'][0] == "Could not find thing matching value for id"
 
 
     
