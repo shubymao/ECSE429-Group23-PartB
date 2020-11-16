@@ -10,7 +10,7 @@ Feature: Marking a task on a todo list
     And the todo list contains the task with title <title>
     And the current progress <progress> of the task is "Incomplete"
     When I change the progress <progress> of the task with title <title> to "Complete"
-    Then the progress of the task should be "Complete"
+    Then the progress of the task <title> should be "Complete"
      
      Examples:
       | title                        | course    | progress     |
@@ -23,7 +23,7 @@ Feature: Marking a task on a todo list
     And the todo list contains the task with title <title>
     And the current progress <progress> of the task is "Complete"
     When I change the progress <progress> of the task with title <title> to "Complete"
-    Then the progress of the task should be "Complete"
+    Then the progress of the task <title> should be "Complete"
     
      Examples:
       | title                        | course    | progress     |
