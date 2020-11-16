@@ -5,7 +5,7 @@ Feature: Querying incomplete tasks
   Background:
     Given the system is running
 
-  Scenario: Querying tasks for a class with some incomplete task(Normal Flow)
+  Scenario Outline: Querying tasks for a class with some incomplete task(Normal Flow)
     Given there exists a todo list in the system with title <course>
     # Done already project id in the GLOBAL CONTEXT
 
@@ -27,7 +27,7 @@ Feature: Querying incomplete tasks
       | ECSE 310 | 2     |
       | COMP 251 | 3     |
 
-  Scenario: Querying tasks for a class with no incomplete task (Alternate Flow)
+  Scenario Outline: Querying tasks for a class with no incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
     And there are no tasks in the todo list that are incomplete
     # r = post projects/project_id/tasks
@@ -43,7 +43,7 @@ Feature: Querying incomplete tasks
       | ECSE 310 | 0     |
       | COMP 251 | 0     |
 
-  Scenario: Querying incomplete tasks on an non-existing todo list (Error Flow)
+  Scenario Outline: Querying incomplete tasks on an non-existing todo list (Error Flow)
     Given there does not exists a todo list in the system with title <course>
       # r = get projects?title=course
       # for project in r.json()['projects']: <- this technically should be empty but just verification

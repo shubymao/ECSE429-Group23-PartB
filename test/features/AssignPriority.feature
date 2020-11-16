@@ -2,9 +2,11 @@ Feature: Assign Priority
   As a student,
   I categorize tasks as HIGH, MEDIUM or LOW priority, so I can better manage my time.
 
-  Scenario Outline: Student add priority on existing tasks (Normal Flow)
+  Background:
     Given the system is running
-    And the task with title <title> exists
+
+  Scenario Outline: Student add priority on existing tasks (Normal Flow)
+    Given the task with title <title> exists
     When the student assign task to <new_priority> priority
     Then the priority of the task should be <new_priority>
     Examples:
@@ -14,8 +16,7 @@ Feature: Assign Priority
       | TA assignment marking | LOW          |
 
   Scenario Outline: Student fetches all tasks of certain priority (Alt Flow)
-    Given the system is running
-    And the following tasks exists:
+    Given the following tasks exists:
       | task 1  | LOW    |
       | task 2  | LOW    |
       | task 3  | MEDIUM |
@@ -36,8 +37,7 @@ Feature: Assign Priority
       | HIGH            | 3                   |
 
   Scenario Outline: Student assign priority to non-existing task (Error Flow)
-    Given the system is running
-    And the task with id <task_id> does not exists
+    Given the task with id <task_id> does not exists
     When the student change task with id <task_id> to <new_priority> priority
     Then the system shall inform the user that the task doesn't exist
     Examples:
