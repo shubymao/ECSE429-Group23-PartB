@@ -34,10 +34,10 @@ Feature: Marking a task on a todo list
     Then the progress of the task <title> should be <newProgress>
 
     Examples:
-      | title              | course   | progress | newProgress |
-      | Edit Draft Report1 | ECSE 429 | Complete | Complete    |
-  # | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete    |
-  # | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete    |
+      | title                        | course   | progress | newProgress |
+      | Edit Draft Report1           | ECSE 429 | Complete | Complete    |
+      | Study for Midterm Exam       | ECSE 429 | Complete | Complete    |
+      | Work on the Third Assignment | ECSE 429 | Complete | Complete    |
 
   Scenario Outline: Marking a Task which does not exist on the to do list (Error Flow)
     Given there exists a todo list in the system with title <course>
@@ -46,6 +46,6 @@ Feature: Marking a task on a todo list
     Then the system will inform the user that the task does not exist
 
     Examples:
-      | title              | course   | progress   |
-      | Edit Draft Report1 | ECSE 429 | Incomplete |
+      | title              | course   | newProgress |
+      | Edit Draft Report1 | ECSE 429 | Incomplete  |
 
