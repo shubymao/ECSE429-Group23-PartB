@@ -10,6 +10,7 @@ class GLOBAL_CONTEXT:
     task_id = None
     project_id = None
     category_id = None
+    json_object = None
     response_json = None
     status_code = None
 

@@ -1,19 +1,22 @@
 import socket
 
+
+import requests 
 import pytest
-import requests
 from pytest_bdd import scenarios, given, when, then, parsers
 
 from conftest import GLOBAL_CONTEXT
 
-scenarios('../features/AssignPriority.feature')
-scenarios('../features/AdjustPriority.feature')
-scenarios('../features/ChangeDescription.feature')
+# scenarios('../features/AssignPriority.feature')
+# scenarios('../features/AdjustPriority.feature')
+# scenarios('../features/ChangeDescription.feature')
 # scenarios('../features/CreateTodoList.feature')
 # scenarios('../features/RemoveTodoList.feature')
-scenarios('../features/MarkTask.feature')
-scenarios('../features/AddTask.feature')
-scenarios('../features/RemoveTask.feature')
+# scenarios('../features/MarkTask.feature')
+# scenarios('../features/AddTask.feature')
+# scenarios('../features/RemoveTask.feature')
+# scenarios('../features/QueryIncompleteHighPriorityTasks.feature')
+scenarios('../features/QueryIncompleteTasks.feature')
 
 @pytest.fixture(scope='function')
 def context():
@@ -397,6 +400,7 @@ def get_tasks_for_todos_lists(title, course):
 @given(parsers.parse("there does not exist a todo list in the system with title <course>"))
 def ensure_todo_does_not_exist(course):
     r = requests.get('http://localhost:4567/projects')
+
     for project in r.json()['projects']:
         if project['title'] == course:
             deleteId = project['id']
@@ -511,6 +515,104 @@ def inform_user_task_not_in_todo_list():
     expected_message = 'Could not find any instances with'
     assert expected_message in GLOBAL_CONTEXT.response_json['errorMessages'][0]
 
+################################
+# QUERY Incomplete High Prority
+################################
+
+@given('there exist a high priority category in the system')
+def ensure_todo_priority_exists():
+    priority = "HIGH"
+    check_or_create_todo_priority(priority)
+
+
+@given('there exist <count> high prioirty, incomplete tasks in the todo list')
+def ensure_there_exists_counts_high_priority(count):
+    r = requests.get(url=f'http://localhost:4567/todos?doneStatus=false')
+    for todo in r.json()['todos']:
+        assign_priority_to_task(todo['id'], GLOBAL_CONTEXT.category_id)
+   
+
+@when('I query all the high priority, incomplete task in the todo list')
+def query_all_high_priority():
+    r = requests.get(url=f'http://localhost:4567/todos?doneStatus=false')
+    task =[]
+    print(r.json())
+    for todo in r.json()['todos']:
+        print("checking")
+        
+        if 'categories' in todo:
+            print("with attribute")
+            ans = None
+            for category in todo['categories']:
+                if category['id'] == GLOBAL_CONTEXT.category_id:
+                    ans = todo
+            if ans != None:
+                task.insert(len(task), ans)
+    
+        else:
+            print(" no attribute ")
+            print(todo)
+            continue
+    GLOBAL_CONTEXT.json_object = task
+        
+    
+
+@given('there exist no high prioirty, incomplete tasks in the todo list')
+def ensure_there_exists_no_high_priority_task():
+    r = requests.get(url=f'http://localhost:4567/todos?doneStatus=false')
+    for todo in r.json()['todos']:
+        if 'categories' in todo:
+            for category in todo['categories']:
+                if category['id'] == GLOBAL_CONTEXT.category_id:
+                    taskId = todo['id']
+                    req = requests.delete(url=f'http://localhost:4567/todos/{taskId}/taskof/{GLOBAL_CONTEXT.project_id}')
+                    req2 = requests.delete(url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.project_id}/taskof/{taskId}')
+                    assert req.status_code == 200
+                    assert req2.status_code == 200
+                    break
+    
+@then(parsers.parse('the system will inform the user that the todo list does not exist'))
+def verify_no_todo_list_response():
+    assert True
+
+######################
+# Query Incomplete task 
+#######################
+
+@given('there are <count> tasks in the todo list that are incomplete')
+def ensure_there_are_count_task(count):
+    ctn = int(count)
+    for i in range(ctn):
+        todo_id = create_task(f'task {i}')
+        body = {'doneStatus' : False}
+        r = requests.post(url=f'http://localhost:4567/todos/{todo_id}', json = body)
+        req = requests.post(url = f'http://localhost:4567/todos/{todo_id}/tasksof', json = {"id": GLOBAL_CONTEXT.project_id})
+        req2 = requests.post(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json = {"id": todo_id})
+
+        assert r.status_code == 200
+        assert req.status_code == 201
+        assert req2.status_code == 201
+@when('When I query all the incomplete task in the todo list')
+def query_all_incompleted_task():
+    r = requests.get(url=f'http://localhost:4567/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
+    GLOBAL_CONTEXT.status_code =  r.status_code 
+    if r.status_code == 200:
+        GLOBAL_CONTEXT.response_json = r.json()
+
+@then('I should see that <count> tasks are found')
+def verify_count_tasks(count):
+    assert len(GLOBAL_CONTEXT.response_json['todos']) == count
+
+@given('there are no tasks in the todo list that are incomplete')
+def ensure_no_incomplete_task_in_todo_list():
+    r = requests.get(url=f'http://localhost:4567/{GLOBAL_CONTEXT.project_id}/tasks')
+    for todo in r.json()['todo']:
+        todoId = todo['id']
+        r = requests.delete(url=f'http://localhost:4567/{GLOBAL_CONTEXT.project_id}/tasks/{todoId}')
+        req = requests.delete(url=f'http://localhost:4567/{todoId}/tasksof/{GLOBAL_CONTEXT.project_id}')
+        assert r.status_code == 200
+        assert req.status_code == 200
+
 # Helper functions
 
 def create_task(title):
@@ -527,7 +629,7 @@ def assign_priority_to_task(task_id, priority_id):
     body['id'] = task_id
     r = requests.post(
         url=f'http://localhost:4567/categories/{priority_id}/todos', json=body)
-
+    assert r.status_code == 201
 
 def check_or_create_todo_priority(priority):
     r = requests.get(url=f"http://localhost:4567/categories?title={priority}")

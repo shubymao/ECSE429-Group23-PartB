@@ -24,8 +24,8 @@ Feature: Querying incomplete tasks
     Examples:
       | course   | count |
       | ECSE 429 | 1     |
-      | ECSE 310 | 2     |
-      | COMP 251 | 3     |
+    # | ECSE 310 | 2     |
+    # | COMP 251 | 3     |
 
   Scenario: Querying tasks for a class with no incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
@@ -35,16 +35,16 @@ Feature: Querying incomplete tasks
     #        delete projects/project_id/tasks/todo['id']
     #        delete todos/todo['id']/tasksof/project_id
     When I query all the incomplete task in the todo list
-    Then I should see that no task are found
+    Then I should see that <count> tasks are found
     # assert len(json['todos']) == 0
     Examples:
       | course   | count |
       | ECSE 429 | 0     |
-      | ECSE 310 | 0     |
-      | COMP 251 | 0     |
+    # | ECSE 310 | 0     |
+    # | COMP 251 | 0     |
 
   Scenario: Querying incomplete tasks on an non-existing todo list (Error Flow)
-    Given there does not exists a todo list in the system with title <course>
+    Given there does not exist a todo list in the system with title <course>
       # r = get projects?title=course
       # for project in r.json()['projects']: <- this technically should be empty but just verification
       #   delete projects/project['id']
@@ -52,6 +52,5 @@ Feature: Querying incomplete tasks
     Then the system will inform the user that the todo list does not exist
       # check error codes 404 and errorMessages <- check yourself 
     Examples:
-      | course   | count |
-      | 1011     | 0     |
-      | 2000     | 0     |
+      | course          |
+      | Phylo 2000      | 
