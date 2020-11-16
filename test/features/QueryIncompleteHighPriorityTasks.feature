@@ -1,43 +1,40 @@
 Feature: Querying incomplete HIGH priority tasks
-   As a student,
-   I query all incomplete HIGH priority tasks from all my classes, to identify my short-term goals. 
+  As a student,
+  I query all incomplete HIGH priority tasks from all my classes, to identify my short-term goals.
 
-   Background:
+  Background:
     Given the system is running
 
-   Scenario: Querying all incomplete HIGH priority tasks for a class (Normal Flow)
-    Given there exists a todo list in the system with title <course> 
-    And there exists at least one task with priority <newPriority> as HIGH and the progress <newProgress> as Incomplete
-    When I query all tasks with progress <newProgress> as Incomplete and the progress <newProgress> as Incomplete for the todo list with title <course> 
-    Then I should see a query list with title <query> that lists all tasks with title <title> that have <newProgress> as Incomplete and priority <new_priority> as HIGH
+  Scenario: Querying tasks for a class with some high priority incomplete task (Normal Flow)
+    Given there exists a todo list in the system with title <course>
+    # done
+    And there exist a high priority category in the system
+    # check_or_create_todo_priority(priority) <- this was my helper function
+    # the helper function puts id into the GLOBAL_CONTEXT.category_id
+    And there exist <count> high prioirty, incomplete tasks in the todo list
+    # First steps same as create incomplete task in todo list (refer to query incomplete job)
+    # within the for loop, use another one of my helper function 
+    # assign_priority_to_task(task_id, priority_id) <- you're welcome
+    When I query all the high priority, incomplete task in the todo list
+    # Query first with the same as query incomplete task (refer to query incomplete job)
+    # filter the array with the todos with the correct category_id
+    # place the array into GLOBAL_CONTEXT.json_object
+    Then I should see that <count> tasks are found
+    # Done
 
-     Examples:
-      | title                        | course   | newProgress | newPriority   |
-      | type the assignment          | ECSE 429 | Incomplete  | HIGH          |
-      | do that reading              | ECSE 429 | Complete    | HIGH          |
-      | check the exam results       | ECSE 429 | Incomplete  | LOW           |
-      | work on next assignment      | ECSE 429 | Complete    | MEDIUM        |
+  Scenario: Querying tasks for a class with no high priority incomplete task (Alternate Flow)
+    Given there exists a todo list in the system with title <course>
+    And there exist a high priority category in the system
+    And there exist no high prioirty, incomplete tasks in the todo list
+    # Get all tasks in the project with doneStatus=false (refer to query incomplete job)
+    # for each task, if tasks is high priority <- this is the only extra step 
+    # delete /todos/task['id']/taskof/project_id
+    # delete /projects/project_id/tasks/task['id']
+    When I query all the high priority, incomplete task in the todo list
+    Then I should see that no tasks are found
 
-   Scenario: Querying all incomplete LOW priority tasks for a class (Alternate Flow)
-    Given there exists a todo list in the system with title <course> 
-    And there exists at least one task with priority <new_priority> as LOW and the progress <newProgress> as Incomplete
-    When I query all tasks with progress <newProgress> as Incomplete and the priority <new_priority> as LOW for the todo list with title <course> 
-    Then I should see a query list with title <query> that lists all tasks with title <title> that have <newProgress> as Incomplete and priority <new_priority> as LOW
-
-     Examples:
-      | title                        | course   | newProgress | newPriority   |
-      | type the assignment          | ECSE 429 | Incomplete  | HIGH          |
-      | do that reading              | ECSE 429 | Complete    | HIGH          |
-      | check the exam results       | ECSE 429 | Incomplete  | LOW           |
-      | work on next assignment      | ECSE 429 | Complete    | MEDIUM        |
-
-   Scenario: Querying incomplete LOW priority tasks on an empty todo list (Error Flow)
-    Given there exists a todo list in the system with title <course> 
-    And the todo list with title <course> is empty
-    When I query all tasks with progress <newProgress> as Complete and priority <newPriority> as HIGH for the todo list with title <course> 
-    Then the system will inform the user that there are no incomplete tasks 
-
-     Examples:
-      | title                        | course   | newProgress | newPriority   |
-      | do that reading              | ECSE 429 | Complete    | HIGH          |
-      | work on next assignment      | ECSE 429 | Complete    | MEDIUM        |
+  Scenario: Querying incomplete high priority tasks on an non-existing todo list (Error Flow)
+    Given there does not exists a todo list in the system with title <course>
+    And there exist a high priority category in the system
+    When I query all the high priority, incomplete task in the todo list
+    Then the system will inform the user that the todo list does not exist

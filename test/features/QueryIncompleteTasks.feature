@@ -1,41 +1,48 @@
 Feature: Querying incomplete tasks
-   As a student,
-   I query the incomplete tasks for a class I am taking, to help manage my time.
+  As a student,
+  I query the incomplete tasks for a class I am taking, to help manage my time.
 
-   Background:
+  Background:
     Given the system is running
 
-   Scenario: Querying incomplete tasks for a class (Normal Flow)
-    Given there exists a todo list in the system with title <course> 
-    And there exists at least one task with progress <newProgress> as "Incomplete"
-    When I query all tasks with progress <newProgress> as "Incomplete" for the todo list with title <course> 
-    Then I should see a query list with title <query> that lists all tasks with title <title> that have <newProgress> as Incomplete 
+  Scenario: Querying tasks for a class with some incomplete task(Normal Flow)
+    Given there exists a todo list in the system with title <course>
+    # Done already project id in the GLOBAL CONTEXT
 
-     Examples:
-      | title                        | course   | newProgress |
-      | Edit Draft Report1           | ECSE 429 | Incomplete  |
-      | Study for Midterm Exam       | ECSE 429 | Incomplete  |
-      | Work on the Third Assignment | ECSE 429 | Complete    |
-      | new task due soon!! do it!   | ECSE 429 | Complete    |
+    And there are <count> tasks in the todo list that are incomplete
+    # for i in range(count) :
+    #    todo_id = create_task(f"task {i}") <- this helper function exists
+    #    post todos/todo_id body {'doneStatus' : false}
+    #    post todos/todo_id/tasksof with body {id: project_id}
+    #    post projects/project_id/tasks with body {id: todo_id}
+    When I query all the incomplete task in the todo list
+    #    get projects/project_id/tasks?doneStatus=false
+    #    store the status codes in GLOBAL CONTEXT 
+    #    store the json response in GLOBAL CONTEXT
+    Then I should see that <count> tasks are found
+    #    assert len(json['todos']) == count
+    Examples:
+      | course   | count |
+      | ECSE 429 | 1     |
+      | ECSE 310 | 2     |
+      | COMP 251 | 3     |
 
-   Scenario: Querying complete tasks for a class (Alternate Flow)
-    Given there exists a todo list in the system with title <course> 
-    And there exists at least one task with progress <newProgress> as "Complete"
-    When I query all tasks with progress <newProgress> as "Complete" for the todo list with title <course> 
-    Then I should see a query list with title <query> that lists all tasks with title <title> that have <newProgress> as "Complete" 
+  Scenario: Querying tasks for a class with no incomplete task (Alternate Flow)
+    Given there exists a todo list in the system with title <course>
+    And there are no tasks in the todo list that are incomplete
+    # r = post projects/project_id/tasks
+    #    for todo in r.json()['todos']: this theoreically should be empty but still should remove
+    #        delete projects/project_id/tasks/todo['id']
+    #        delete todos/todo['id']/tasksof/project_id
+    When I query all the incomplete task in the todo list
+    Then I should see that no task are found
+    # assert len(json['todos']) == 0
 
-     Examples:
-      | title                        | course   | newProgress |
-      | type the assignment          | ECSE 429 | Incomplete  |
-      | do that reading              | ECSE 429 | Complete    |
-
-   Scenario: Querying incomplete tasks on an empty todo list (Error Flow)
-    Given there exists a todo list in the system with title <course> 
-    And the todo list with title <course> is empty
-    When I query all tasks with progress <newProgress> as "Complete" for the todo list with title <course> 
-    Then the system will inform the user that there are no incomplete tasks     
-
-     Examples:
-      | title                        | course   | newProgress |
-      | testing the test             | ECSE 429 | Incomplete  |
-      | writing the tests            | ECSE 429 | Complete    |
+  Scenario: Querying incomplete tasks on an non-existing todo list (Error Flow)
+    Given there does not exists a todo list in the system with title <course>
+      # r = get projects?title=course
+      # for project in r.json()['projects']: <- this technically should be empty but just verification
+      #   delete projects/project['id']
+    When I query all the incomplete task in the todo list
+    Then the system will inform the user that the todo list does not exist
+      # check error codes 404 and errorMessages <- check yourself 

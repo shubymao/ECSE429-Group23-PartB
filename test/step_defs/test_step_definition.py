@@ -6,20 +6,18 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 from conftest import GLOBAL_CONTEXT
 
-# Finished scenarios: Adjust priority, Change Description
-
-#scenarios('../features/AssignPriority.feature')
-#scenarios('../features/AdjustPriority.feature')
-#scenarios('../features/ChangeDescription.feature')
-
-
+# scenarios('../features/AssignPriority.feature')
+# scenarios('../features/AdjustPriority.feature')
+# scenarios('../features/ChangeDescription.feature')
 # scenarios('../features/CreateTodoList.feature')
-scenarios('../features/RemoveTodoList.feature')
+# scenarios('../features/RemoveTodoList.feature')
+# scenarios('../features/MarkTask.feature')
+# scenarios('../features/AddTask.feature')
+# scenarios('../features/RemoveTask.feature')
 
 @pytest.fixture(scope='function')
 def context():
     return {}
-
 
 @given('the system is running')
 def the_system_is_setup():
@@ -154,7 +152,8 @@ def delete_existing_categories(course, context):
     r = requests.get("http://localhost:4567/categories")
     for category in r.json()['categories']:
         if category['title'] == course:
-            context['request_return'] = requests.delete(f"http://localhost:4567/categories/{category['id']}")
+            context['request_return'] = requests.delete(
+                f"http://localhost:4567/categories/{category['id']}")
             assert True
             return
 
@@ -165,7 +164,8 @@ def delete_non_existent_categories(course, context):
     for category in r.json()['categories']:
         if category['title'] == course:
             assert False
-    context['request_return'] = requests.delete("http://localhost:4567/categories/823472")
+    context['request_return'] = requests.delete(
+        "http://localhost:4567/categories/823472")
     assert True
 
 
@@ -218,7 +218,7 @@ def change_task_description(description):
 
 
 @when('the student change description of task with id <task_id> to <description>')
-def change_task_description(task_id, description):
+def change_task_description_again(task_id, description):
     body = {'description': description}
     r = requests.post(
         url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
@@ -235,7 +235,7 @@ def fetch_tasks_with_target_priority(target_priority):
 
 
 @when(parsers.parse('I add a new task entry to <course>'))
-def add_todo_to_category(course, context):
+def add_todo_to_category_again(course, context):
     # Recall: the course that we targeted
     # context['request_return']['id']
 
@@ -344,7 +344,172 @@ def check_task_added(course, context):
 def check_the_displayed_tasks(expected_task_count):
     todos = GLOBAL_CONTEXT.response_json['categories'][0]['todos']
     assert len(todos) == int(expected_task_count)
+##############
+## ADD TASK ##
+#############
 
+@given("there exists a todo list in the system with title <course>")
+def ensure_todo_lists_title_course_exist(course):
+    body = {
+        'title': course
+    }
+    r = requests.post(url='http://localhost:4567/projects', json=body)
+    GLOBAL_CONTEXT.project_id = r.json()['id']
+    assert r.status_code == 201
+    assert r.json()['title'] == course
+
+
+@when("I add a new task with title <title> to the todo list with title <course>")
+def add_new_tasks_with_title_title(title, course):
+    if GLOBAL_CONTEXT.todo_id == -1:
+        return
+    todoPost = 'http://localhost:4567/todos'
+    print(GLOBAL_CONTEXT.todo_id)
+    todoBody = {'title': title}
+    req = requests.post(url=todoPost, json=todoBody)
+    GLOBAL_CONTEXT.todo_id = req.json()['id']
+    linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
+    body = {"id": str(GLOBAL_CONTEXT.project_id)}
+    print(GLOBAL_CONTEXT.project_id + "")
+    r = requests.post(url=linkUrl, json=body)
+
+    GLOBAL_CONTEXT.status_code = r.status_code
+    print(r.status_code)
+    if(r.status_code != 201):
+        GLOBAL_CONTEXT.response_json = r.json()
+
+    linkUrl2 = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    body = {"id": str(GLOBAL_CONTEXT.todo_id)}
+
+    r = requests.post(url=linkUrl2, json=body)
+
+@then("I will see a new task with title <title> in the todo list with title <course>")
+def get_tasks_for_todos_lists(title, course):
+    url = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    req = requests.get(url=url)
+    assert req.status_code == 200
+    for task in req.json()['todos']:
+        if task['title'] == title:
+            assert True
+            return
+    assert False
+
+@given(parsers.parse("there does not exist a todo list in the system with title <course>"))
+def ensure_todo_does_not_exist(course):
+    r = requests.get('http://localhost:4567/projects')
+    for project in r.json()['projects']:
+        if project['title'] == course:
+            deleteId = project['id']
+            req = requests.delete(
+                url=f'http://localhost:4567/projects/{deleteId}')
+            assert req.status_code == 200
+
+@then(parsers.parse("the system will inform the user that the todo list with title <course> does not exist"))
+def get_error_response(course):
+    expectedMessage = "Could not find thing matching value for id"
+    print(GLOBAL_CONTEXT.response_json['errorMessages'])
+    if expectedMessage in GLOBAL_CONTEXT.response_json['errorMessages'][0]:
+        assert True
+    else:
+        assert False
+
+@given('the task is part of the todo list')
+def ensure_todos_list_contains_task_with_title():
+    linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
+    body = {"id": str(GLOBAL_CONTEXT.project_id)}
+    r = requests.post(url=linkUrl, json=body)
+    assert r.status_code == 201
+    linkUrl = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    body = {"id": str(GLOBAL_CONTEXT.todo_id)}
+    r = requests.post(url=linkUrl, json=body)
+    assert r.status_code == 201
+
+@given('the task has done status of <status>')
+def ensure_task_status(status):
+    value = False
+    if status == "Complete":
+        value = True
+    body = {"doneStatus": value}
+    r = requests.post(
+        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json=body)
+    assert r.status_code == 200
+
+@when('I change the done status to <new_status>')
+def change_task_status(new_status):
+    value = False
+    if new_status == "Complete":
+        value = True
+    body = {"doneStatus": value}
+    urlPost = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}'
+    r = requests.post(url=urlPost, json=body)
+    if r.status_code != 200:
+        GLOBAL_CONTEXT.response_json = r.json()
+
+
+@then('the status of the task should be <new_status>')
+def task_progress_shaould_be_complete(new_status):
+    r = requests.get(
+        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}')
+    value = "false"
+    if new_status == "Complete":
+        value = "true"
+    assert r.status_code == 200
+    assert r.json()['todos'][0]['doneStatus'] == value
+
+@then('the system will inform the user that the task does not exist')
+def inform_user_task_does_not_exist():
+    expected_message = 'No such todo entity instance with GUID'
+    assert expected_message in GLOBAL_CONTEXT.response_json['errorMessages'][0]
+
+@given('the task is not part of the todo list')
+def ensure_the_task_does_not_exist_in_todo_list():
+    todo_id = str(GLOBAL_CONTEXT.todo_id)
+    proj_id = str(GLOBAL_CONTEXT.project_id)
+    r = requests.get(url=f'http://localhost:4567/todos/{todo_id}/tasksof')
+    if len(list(filter(lambda x: x['id'] == proj_id, r.json()['projects']))) != 0:
+        requests.delete(
+            url=f'http://localhost:4567/todos/{todo_id}/tasksof/{proj_id}')
+    r = requests.get(url=f'http://localhost:4567/projects/{proj_id}/tasks')
+    if len(list(filter(lambda x: x['id'] == todo_id, r.json()['todos']))) != 0:
+        requests.delete(
+            url=f'http://localhost:4567/projects/{proj_id}/tasks/{todo_id}')
+
+@when('I remove the task from the todo list')
+def remove_task_from_todo_list():
+    todo_id = str(GLOBAL_CONTEXT.todo_id)
+    proj_id = str(GLOBAL_CONTEXT.project_id)
+    linkUrl = f'http://localhost:4567/todos/{todo_id}/tasksof/{proj_id}'
+    body = {"id": str(GLOBAL_CONTEXT.project_id)}
+    r = requests.delete(url=linkUrl, json=body)
+    if r.status_code != 200:
+        GLOBAL_CONTEXT.status_code = r.status_code
+        GLOBAL_CONTEXT.response_json = r.json()
+    linkUrl = f'http://localhost:4567/projects/{proj_id}/tasks{todo_id}'
+    body = {"id": str(GLOBAL_CONTEXT.todo_id)}
+    r = requests.delete(url=linkUrl, json=body)
+
+@then('I should not see the task with title <title> in the todo list with title <course>')
+def check_task_does_not_exist_in_todo_list(title, course):
+    todo_id = str(GLOBAL_CONTEXT.todo_id)
+    proj_id = str(GLOBAL_CONTEXT.project_id)
+    r = requests.get(f'http://localhost:4567/todos/{todo_id}')
+    todo = r.json()['todos'][0]
+    assert todo['title'] == title
+    if 'tasksof' in todo:
+        assert len(
+            list(filter(lambda x: x['id'] == proj_id, todo['tasksof']))) == 0
+    r = requests.get(f'http://localhost:4567/projects/{proj_id}')
+    proj = r.json()['projects'][0]
+    assert proj['title'] == course
+    if 'tasks' in proj:
+        assert len(
+            list(filter(lambda x: x['id'] == todo_id, proj['tasks']))) == 0
+
+@then('the system will inform the user that the task is not on the todo list')
+def inform_user_task_not_in_todo_list():
+    assert GLOBAL_CONTEXT.status_code == 404
+    expected_message = 'Could not find any instances with'
+    assert expected_message in GLOBAL_CONTEXT.response_json['errorMessages'][0]
 
 # Helper functions
 

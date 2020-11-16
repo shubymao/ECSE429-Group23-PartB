@@ -2,9 +2,11 @@ Feature: Adjust Priority
   As a student,
   I want to adjust the priority of a task, to help better manage my time.
 
-  Scenario Outline: Student changed priority to a different priority (Normal Flow)
+  Background:
     Given the system is running
-    And the task with title <title> exists
+
+  Scenario Outline: Student changed priority to a different priority (Normal Flow)
+    Given the task with title <title> exists
     And the task has <old_priority> priority
     When the student change task to <new_priority> priority
     Then the priority of the task should be <new_priority>
@@ -18,8 +20,7 @@ Feature: Adjust Priority
       | TA assignment marking  | HIGH        | LOW         |
 
   Scenario Outline: Student changed priority to the same priority (Alt Flow)
-    Given the system is running
-    And the task with title <title> exists
+    Given the task with title <title> exists
     And the task has <old_priority> priority
     When the student change task to <new_priority> priority
     Then the priority of the task should be <new_priority>
@@ -30,8 +31,7 @@ Feature: Adjust Priority
       | some large assignment  | HIGH        | HIGH        |
 
   Scenario Outline: Student changed priority to non-existing task (Error Flow)
-    Given the system is running
-    And the task with id <task_id> does not exists
+    Given the task with id <task_id> does not exists
     When the student change task with id <task_id> to <new_priority> priority
     Then the system shall inform the user that the task doesn't exist
     Examples:

@@ -7,6 +7,8 @@ import time
 
 class GLOBAL_CONTEXT:
     todo_id = None
+    task_id = None
+    project_id = None
     category_id = None
     response_json = None
     status_code = None
