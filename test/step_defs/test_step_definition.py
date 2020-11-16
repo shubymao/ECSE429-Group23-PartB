@@ -11,9 +11,11 @@ from conftest import GLOBAL_CONTEXT
 #scenarios('../features/ChangeDescription.feature')
 #scenarios('../features/CreateTodoList.feature')
 #scenarios('../features/RemoveTodoList.feature')
-scenarios('../features/MarkTask.feature')
+#scenarios('../features/MarkTask.feature')
 #scenarios('../features/AddTask.feature')
 #scenarios('../features/RemoveTask.feature')
+scenarios('../features/QueryIncompleteHighPriorityTasks.feature')
+scenarios('../features/QueryIncompleteTasks.feature')
 
 @pytest.fixture(scope='function')
 def context():
