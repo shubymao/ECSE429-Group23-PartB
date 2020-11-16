@@ -46,6 +46,6 @@ Scenario Outline: Marking a Task which does not exist on the to do list (Error F
   Then the system will inform the user that the task does not exist
 
   Examples:
-    | title              | course   | progress   |
-    | Edit Draft Report1 | ECSE 429 | Incomplete |
+    | title              | course   | newProgress   |
+    | Edit Draft Report1 | ECSE 429 | Incomplete    |
 

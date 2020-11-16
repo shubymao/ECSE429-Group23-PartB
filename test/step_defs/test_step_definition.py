@@ -353,8 +353,8 @@ def ensure_todo_lists_title_course_exist(course):
     body = {
         'title': course
     }
-    r = requests.post(url='http://localhost:4567/todos', json=body)
-    GLOBAL_CONTEXT.todo_id = str(r.json()['id'])
+    r = requests.post(url='http://localhost:4567/projects', json=body)
+    GLOBAL_CONTEXT.project_id = r.json()['id']
     assert r.status_code == 201
     assert r.json()['title'] == course
    
@@ -363,29 +363,32 @@ def ensure_todo_lists_title_course_exist(course):
 def add_new_tasks_with_title_title(title, course):
     if GLOBAL_CONTEXT.todo_id == -1:
         return
-    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+    todoPost = 'http://localhost:4567/todos'
     print(GLOBAL_CONTEXT.todo_id)
-    body2 = {'title': title}
-    req = requests.post(url=urlPost, json=body2 )
-    assert req.status_code == 201
-    assert req.json()['title']==title
+    todoBody = {'title': title}
+    req = requests.post(url=todoPost, json=todoBody )
+    GLOBAL_CONTEXT.todo_id = req.json()['id']
+    linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
+    body = {"id": str(GLOBAL_CONTEXT.project_id)}
+    print(GLOBAL_CONTEXT.project_id + "")
+    r = requests.post(url=linkUrl, json=body)
+    
+    GLOBAL_CONTEXT.status_code = r.status_code
+    print(r.status_code)
+    if(r.status_code != 201) :
+        GLOBAL_CONTEXT.response_json = r.json()
+
+    linkUrl2 = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    body = {"id": str(GLOBAL_CONTEXT.todo_id)}
+    
+    r = requests.post(url=linkUrl2, json=body)
 
 @then("I will see a new task with title <title> in the todo list with title <course>")
 def get_tasks_for_todos_lists(title, course):
-    r = requests.get('http://localhost:4567/todos')
-    id = -1
-    print(r.json()['todos'])
-    for todo in r.json()['todos']:
-        print(todo['title'])
-        print(course)
-        if todo['title']== course:
-            id = todo['id']
-    if id==-1:
-        assert False
-    url = 'http://localhost:4567/todos/' + id + '/tasksof'
+    url = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
     req = requests.get(url=url)
     assert req.status_code == 200
-    for task in req.json()['projects']:
+    for task in req.json()['todos']:
         if task['title'] == title:
             assert True
             return
@@ -393,118 +396,103 @@ def get_tasks_for_todos_lists(title, course):
     
 @given(parsers.parse("there does not exist a todo list in the system with title <course>"))
 def ensure_todo_does_not_exist(course):
-    r = requests.get('http://localhost:4567/todos')
-    for todo in r.json()['todos']:
-        if todo['title'] == course:
-            assert False
-            return
-    GLOBAL_CONTEXT.todo_id = -1
-    assert True
+    r = requests.get('http://localhost:4567/projects')
+    for project in r.json()['projects']:
+        if project['title'] == course:
+            deleteId = project['id']
+            req = requests.delete(url=f'http://localhost:4567/projects/{deleteId}')
+            assert req.status_code == 200
+   
 @then(parsers.parse("the system will inform the user that the todo list with title <course> does not exist"))
 def get_error_response(course):
-    r = requests.get('http://localhost:4567/todos/' + course)
-    error = ['Could not find an instance with todos/' + course] 
-    assert r.status_code == 404
-    assert r.json()['errorMessages'] == error
+    expectedMessage = "Could not find thing matching value for id"
+    print(GLOBAL_CONTEXT.response_json['errorMessages'])
+    if expectedMessage in GLOBAL_CONTEXT.response_json['errorMessages'][0]:
+        assert True
+    else:
+        assert False
 
 ###############
 ## MARK TASK ##
 ##############
 @given('the todo list contains the task with title <title>')
 def ensure_todos_list_contains_task_with_title_title(title):
-    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    r = requests.get(url=urlPost)
-    assert r.status_code == 200
-    for task in r.json()['projects']:
-        if task['title'] == title:
-            assert True
-            return
-    body = {"title": title}
-    req = requests.post(urlPost, json = body)
-    GLOBAL_CONTEXT.task_id = str(req.json()['id'])
+    urlPost = 'http://localhost:4567/todos'
+    body = {'title': title}
+    r = requests.post(url=urlPost, json = body)
+    GLOBAL_CONTEXT.todo_id = r.json()['id']
 
-    assert req.status_code == 201
-    assert req.json()['title'] == title
+    linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
+    body = {"id": str(GLOBAL_CONTEXT.project_id)}
+    r = requests.post(url=linkUrl, json=body)
 
-@given('the current progress <progress> of the task with <title> is "Incomplete"')
-def ensure_task_progress_is_incomplete(progress, title):
-    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    r = requests.get(url=urlPost)
-    assert r.status_code == 200
-    for task in r.json()['projects']:
-        if task['title'] == title:
-            assert task['completed'] == "false"
-            return
-    assert False
-@given('the current progress <progress> of the task with <title> is "Complete"')
-def ensure_task_progress_is_complete(progress, title):
-    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-    r = requests.get(url=urlPost)
-    assert r.status_code == 200
-    for task in r.json()['projects']:
-        if task['title'] == title:
-            assert task['completed'] == "true"
-            return
-    assert False
-@when('I change the progress <progress> of the task with title <title> to "Complete"')
-def change_task_progress_with_title_title(progress, title):
-    value = True
-    if(progress == "Incomplete"):
-        value = False
-    print(f'ID :  {GLOBAL_CONTEXT.todo_id}')
-    url = f'http://localhost:4567/todos' 
-    body = {
-        "title": "title"
-        # "completed": str(value),
-        # "active": "true",
-        # "description": ""
-    }
-    print("HEREEE")
-    print(GLOBAL_CONTEXT.task_id)
-    # req = requests.get(url=url)
-    # for task in req.json()['projects']:
-    #     if task['title'] == title:
-    #         print(task)
-    r = requests.post(url=url, json = body)
-    print(r.json())
     assert r.status_code == 201
-@then('the progress of the task <title> should be "Complete"')
-# def task_progress_shaould_be_complete(title):
-#     if GLOBAL_CONTEXT.todo_id == None:
-#         assert False
-#         return
-#     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-#     r = requests.get(url=url)
-#     print(r.json())
-#     print(GLOBAL_CONTEXT.task_id)
-#     for task in r.json()['projects']:
-#         if task['title'] == title:
-#             assert task['completed'] == "true"
-#             return
+    
+    linkUrl2 = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    body = {"id": str(GLOBAL_CONTEXT.todo_id)}
+    
+    r = requests.post(url=linkUrl2, json=body)
+    assert r.status_code == 201
+
+@given('the current progress of the task with <title> is <progress>')
+def ensure_task_progress_is_incomplete(title, progress):
+    urlPost = f'http://localhost:4567/todos?title={title}'
+    r = requests.get(url=urlPost)
+    print(r.status_code)
+    tid = r.json()['todos'][0]['id']
+    value = False
+    if progress == "Complete":
+        value = True
+    body = {"doneStatus": value}
+    r = requests.post(url=f'http://localhost:4567/todos/{tid}', json = body)
+
+    assert r.status_code == 200
+    
+@given('the current progress <progress> of the task with <title> is "Complete"')
+# def ensure_task_progress_is_complete(progress, title):
+    
+
+
+@when('I change the progress of the task with title <title> to <newProgress>')
+def change_task_progress_with_title_title(title, newProgress):
+    urlPost = f'http://localhost:4567/todos?title={title}'
+    r = requests.get(url=urlPost)
+    if len(r.json()['todos']) != 0:
+        tid = r.json()['todos'][0]['id']
+        value = False
+        if newProgress == "Complete":
+            value = True
+        body = {"doneStatus": value}
+        r = requests.post(url=f'http://localhost:4567/todos/{tid}', json = body)
+
+        GLOBAL_CONTEXT.status_code = r.status_code
+        
+    if r.status_code != 201:
+        GLOBAL_CONTEXT.response_json = r.json()
+    
+
+@then('the progress of the task <title> should be <newProgress>')
+def task_progress_shaould_be_complete(title, newProgress):
+    urlPost = f'http://localhost:4567/todos?title={title}'
+    r = requests.get(url=urlPost)
+    value = "false"
+    if newProgress == "Complete":
+        value = "true"
+    assert r.status_code == 200
+    assert r.json()['todos'][0]['doneStatus'] == value
+    
 @given('the todo list does not contain the task with title <title>')
-# def ensure_todo_list_does_not_contain_task(title):
-#     if GLOBAL_CONTEXT.todo_id == None:
-#         assert False
-#         return
-#     urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-#     r = requests.get(url=urlPost)
-#     for task in r.json()['projects']:
-#         if task['title'] == title:
-#             assert False
-#     assert True
+def ensure_task_does_not_exist_in_todo_list(title):
+    r = requests.get(url='http://localhost:4567/todos')
+    for task in r.json()['todos']:
+        deleteId = task['id']
+        req = requests.delete(url=f'http://localhost:4567/todos/{deleteId}')
+        assert req.status_code == 200
+
 
 @then('the system will inform the user that the task does not exist')
-# def inform_user_task_does_not_exist():
-#     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
-#     body = {
-#         "id": "NONE-EXISTING-TASK",
-#         "completed": True
-#     }
-#     r = requests.post(url=url, json = body)
-#     r.status_code == 404
-#     r.json()['errorMessages'][0] == "Could not find thing matching value for id"
-
-
+def inform_user_task_does_not_exist():
+    assert len(GLOBAL_CONTEXT.response_json['todos']) == 0
     
 
 
