@@ -466,7 +466,7 @@ def task_progress_shaould_be_complete(title):
         if task['title'] == title:
             assert task['completed'] == "true"
             return
-@given('And the todo list does not contain the task with title <title>')
+@given('the todo list does not contain the task with title <title>')
 def ensure_todo_list_does_not_contain_task(title):
     if GLOBAL_CONTEXT.todo_id == -1 or GLOBAL_CONTEXT.todo_id == None:
         assert False

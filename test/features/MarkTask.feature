@@ -15,8 +15,8 @@ Feature: Marking a task on a todo list
      Examples:
       | title                        | course    | progress     |
       | Edit Draft Report1           | ECSE 429  | Incomplete   |
-      | Study for Midterm Exam       | ECSE 429  | Incomplete   |
-      | Work on the Third Assignment | ECSE 429  | Incomplete   |
+      # | Study for Midterm Exam       | ECSE 429  | Incomplete   |
+      # | Work on the Third Assignment | ECSE 429  | Incomplete   |
 
    Scenario Outline: Marking an Already-Completed Task as Done (Alternate Flow)
     Given there exists a todo list in the system with title <course> 
@@ -28,8 +28,8 @@ Feature: Marking a task on a todo list
      Examples:
       | title                        | course    | progress     |
       | Edit Draft Report1           | ECSE 429  | Complete     |
-      | Study for Midterm Exam       | ECSE 429  | Incomplete   |
-      | Work on the Third Assignment | ECSE 429  | Incomplete   |
+      # | Study for Midterm Exam       | ECSE 429  | Incomplete   |
+      # | Work on the Third Assignment | ECSE 429  | Incomplete   |
 
    Scenario Outline: Marking a Task which does not exist on the to do list (Error Flow)
     Given there exists a todo list in the system with title <course> 
