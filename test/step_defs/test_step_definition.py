@@ -348,7 +348,7 @@ def the_system_is_setup():
 ## ADD TASK ##
 #############
 @given('there exists a todo list in the system with title <course>')
-def ensure_todo_lists_title_course_exist():
+def ensure_todo_lists_title_course_exist(course):
     assert True
    
 
@@ -379,9 +379,9 @@ def get_tasks_for_todos_lists(title, course):
     assert req.status_code == 200
     assert req.json()['title'] == title
     
-@given(parsers.parse("there does not exist a todo list in the system with title <course>"))
-@when(parsers.parse("I add a new task with title <title> to the todo list with title <course>"))
-@then(parsers.parse("the system will inform the user that the todo list does not exist"))
+# @given(parsers.parse("there does not exist a todo list in the system with title <course>"))
+# @when(parsers.parse("I add a new task with title <title> to the todo list with title <course>"))
+# @then(parsers.parse("the system will inform the user that the todo list does not exist"))
 
     
 
