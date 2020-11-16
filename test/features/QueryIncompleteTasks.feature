@@ -5,7 +5,7 @@ Feature: Querying incomplete tasks
   Background:
     Given the system is running
 
-  Scenario: Querying tasks for a class with some incomplete task(Normal Flow)
+  Scenario Outline: Querying tasks for a class with some incomplete task(Normal Flow)
     Given there exists a todo list in the system with title <course>
     # Done already project id in the GLOBAL CONTEXT
 
@@ -27,7 +27,7 @@ Feature: Querying incomplete tasks
       | ECSE 310 | 2     |
       | COMP 251 | 3     |
 
-  Scenario: Querying tasks for a class with no incomplete task (Alternate Flow)
+  Scenario Outline: Querying tasks for a class with no incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
     And there are no tasks in the todo list that are incomplete
     # r = post projects/project_id/tasks

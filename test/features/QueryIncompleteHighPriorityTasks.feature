@@ -5,7 +5,7 @@ Feature: Querying incomplete HIGH priority tasks
   Background:
     Given the system is running
 
-  Scenario: Querying tasks for a class with some high priority incomplete task (Normal Flow)
+  Scenario Outline: Querying tasks for a class with some high priority incomplete task (Normal Flow)
     Given there exists a todo list in the system with title <course>
     # done
     And there exist a high priority category in the system
@@ -27,7 +27,7 @@ Feature: Querying incomplete HIGH priority tasks
       | ECSE 429 | 3     |
       | COMP 251 | 4     |
 
-  Scenario: Querying tasks for a class with no high priority incomplete task (Alternate Flow)
+  Scenario Outline: Querying tasks for a class with no high priority incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
     And there exist a high priority category in the system
     And there exist no high prioirty, incomplete tasks in the todo list
