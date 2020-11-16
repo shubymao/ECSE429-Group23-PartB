@@ -16,7 +16,7 @@ Feature: Create a TODO List
       | ATOC-185                   |
       | somethingunrelatedtoMcGill |
 
-    # This test should fail because it's not behaving.
+  # This test should fail because it's not behaving.
   Scenario Outline: Create a to do list with a conflicting name
     Given I can see a list with <course> within the application
     When I add a new course with title <course>
@@ -28,9 +28,9 @@ Feature: Create a TODO List
       | COMP-330                   |
       | ATOC-185                   |
       | somethingunrelatedtoMcGill |
-    # Semantically, this is a bug. You should not be able to have multiple todo lists that are named the same thing.
+  # Semantically, this is a bug. You should not be able to have multiple todo lists that are named the same thing.
 
-# TODO: Elaborate on the type of things you can make a task
+  # TODO: Elaborate on the type of things you can make a task
   Scenario Outline: Create a task for an existing class
     Given I can see a list with <course> within the application
     When I add a new task entry to <course>
@@ -54,5 +54,5 @@ Feature: Create a TODO List
       | ATOC-185                   |
       | somethingunrelatedtoMcGill |
 
-    # NEED ALTERNATIVE FLOW
-  #TODO: Alternative flow could be something else to do for task
+# NEED ALTERNATIVE FLOW
+#TODO: Alternative flow could be something else to do for task

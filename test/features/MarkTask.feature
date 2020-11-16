@@ -23,29 +23,29 @@ Feature: Marking a task on a todo list
     Examples:
       | title              | course   | progress   | newProgress |
       | Edit Draft Report1 | ECSE 429 | Incomplete | Complete    |
-# | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete |
-# | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete |
+  # | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete |
+  # | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete |
 
-Scenario Outline: Marking an Already-Completed Task as Done (Alternate Flow)
-  Given there exists a todo list in the system with title <course>
-  And the todo list contains the task with title <title>
-  And the current progress of the task with <title> is <progress>
-  When I change the progress of the task with title <title> to <newProgress>
-  Then the progress of the task <title> should be <newProgress>
+  Scenario Outline: Marking an Already-Completed Task as Done (Alternate Flow)
+    Given there exists a todo list in the system with title <course>
+    And the todo list contains the task with title <title>
+    And the current progress of the task with <title> is <progress>
+    When I change the progress of the task with title <title> to <newProgress>
+    Then the progress of the task <title> should be <newProgress>
 
-  Examples:
-    | title              | course   | progress | newProgress |
-    | Edit Draft Report1 | ECSE 429 | Complete | Complete    |
-# | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete    |
-# | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete    |
+    Examples:
+      | title              | course   | progress | newProgress |
+      | Edit Draft Report1 | ECSE 429 | Complete | Complete    |
+  # | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete    |
+  # | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete    |
 
-Scenario Outline: Marking a Task which does not exist on the to do list (Error Flow)
-  Given there exists a todo list in the system with title <course>
-  And the todo list does not contain the task with title <title>
-  When I change the progress of the task with title <title> to <newProgress>
-  Then the system will inform the user that the task does not exist
+  Scenario Outline: Marking a Task which does not exist on the to do list (Error Flow)
+    Given there exists a todo list in the system with title <course>
+    And the todo list does not contain the task with title <title>
+    When I change the progress of the task with title <title> to <newProgress>
+    Then the system will inform the user that the task does not exist
 
-  Examples:
-    | title              | course   | progress   |
-    | Edit Draft Report1 | ECSE 429 | Incomplete |
+    Examples:
+      | title              | course   | progress   |
+      | Edit Draft Report1 | ECSE 429 | Incomplete |
 
