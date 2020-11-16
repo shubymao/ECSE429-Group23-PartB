@@ -15,8 +15,6 @@ Feature: Removing a task from a todo list
     Examples:
       | course   | title         | status    |
       | ECSE 345 | Do Assignment | Completed |
-      | ECSE 429 | Write Test    | Completed |
-      | ECSE 310 | Review Paper  | Completed |
 
   Scenario Outline: Removing an uncompleted task from a todo list (Alternate Flow)
     Given there exists a todo list in the system with title <course>
@@ -27,9 +25,7 @@ Feature: Removing a task from a todo list
     Then I should not see the task with title <title> in the todo list with title <course>
     Examples:
       | course   | title         | status      |
-      | ECSE 345 | Do Assignment | Incompleted |
-      | ECSE 429 | Write Test    | Incompleted |
-      | ECSE 310 | Review Paper  | Incompleted |
+      | ECSE 429 | Do Assignment | Incompleted |
 
   Scenario Outline: Removing a task not on a todo list (Error Flow)
     Given there exists a todo list in the system with title <course>
@@ -37,5 +33,8 @@ Feature: Removing a task from a todo list
     And the task is not part of the todo list
     When I remove the task from the todo list
     Then the system will inform the user that the task is not on the todo list
+    Examples:
+      | course   | title         |
+      | ECSE 345 | Do Assignment |
 
 
