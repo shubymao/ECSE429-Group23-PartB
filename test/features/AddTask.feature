@@ -6,8 +6,8 @@ Feature: Adding a task to a todo list
     Given the system is running
 
   Scenario Outline: Adding a task to a course to do list (Normal Flow)
-    Given there exists a todo list in the system with title <course> 
-    When I add a new task with title <title> to the todo list with title <course> 
+    Given there exists a todo list in the system with title <course>
+    When I add a new task with title <title> to the todo list with title <course>
     Then I will see a new task with title <title> in the todo list with title <course>
      
      Examples:
