@@ -451,20 +451,20 @@ def change_task_progress_with_title_title(progress, title):
     value = True
     if(progress == "Incomplete"):
         value = False
-    url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+    print(f'ID :  {GLOBAL_CONTEXT.todo_id}')
+    url = f'http://localhost:4567/todos' 
     body = {
-        "id": GLOBAL_CONTEXT.task_id.__str__(),
-        "title": "title",
-        "completed": value,
-        "active": "true",
-        "description": ""
+        "title": "title"
+        # "completed": str(value),
+        # "active": "true",
+        # "description": ""
     }
     print("HEREEE")
     print(GLOBAL_CONTEXT.task_id)
-    req = requests.get(url=url)
-    for task in req.json()['projects']:
-        if task['title'] == title:
-            print(task)
+    # req = requests.get(url=url)
+    # for task in req.json()['projects']:
+    #     if task['title'] == title:
+    #         print(task)
     r = requests.post(url=url, json = body)
     print(r.json())
     assert r.status_code == 201
