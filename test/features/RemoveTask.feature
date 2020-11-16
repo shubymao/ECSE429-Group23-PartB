@@ -36,8 +36,3 @@ Feature: Removing a task from a todo list
     Examples:
       | course   | title         |
       | ECSE 345 | Do Assignment |
-
-     Examples:
-      | title                        | course   | necessary |
-      | Edit Draft Report1           | ECSE 429 | No        |
-

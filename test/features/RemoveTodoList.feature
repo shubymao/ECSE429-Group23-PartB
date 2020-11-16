@@ -12,9 +12,9 @@ Feature: Delete a todo list
     Then I should see the to do list entry <course>, disappear from the application
     And I should see a success message
     Examples:
-      | course |
-      | test  |
-      | something  |
+      | course    |
+      | test      |
+      | something |
 
   Scenario Outline: Delete a to do list for a class with no tasks in it
     Given I can see a list with <course> within the application
@@ -24,9 +24,9 @@ Feature: Delete a todo list
     And I should see a success message
     Examples:
       | course |
-      | wah  |
-      | gah  |
-    
+      | wah    |
+      | gah    |
+
 
   Scenario Outline: Delete a to do list which does not exist
     Given I can see a list that does not include <course> within the application
@@ -34,5 +34,5 @@ Feature: Delete a todo list
     Then I should see an error message
     Examples:
       | course |
-      | test |
-      | ok |
+      | test   |
+      | ok     |
