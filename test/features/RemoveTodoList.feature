@@ -15,7 +15,6 @@ Feature: Delete a todo list
       | course |
       | test  |
       | something  |
-    #TODO: Not sure what to do here for success.
 
   Scenario Outline: Delete a to do list for a class with no tasks in it
     Given I can see a list with <course> within the application
@@ -27,7 +26,7 @@ Feature: Delete a todo list
       | course |
       | wah  |
       | gah  |
-    # TODO: not sure what to do here for success.
+    
 
   Scenario Outline: Delete a to do list which does not exist
     Given I can see a list that does not include <course> within the application
@@ -37,4 +36,3 @@ Feature: Delete a todo list
       | course |
       | test |
       | ok |
-    # TODO: not sure what to do here for failure
