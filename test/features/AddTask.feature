@@ -34,5 +34,5 @@ Feature: Adding a task to a todo list
     
     Examples:
       | title                        | course   |
-      | no task                      | ECSE 429 |
+      | no task                      | 429      |
       
