@@ -21,6 +21,11 @@ Feature: Querying incomplete HIGH priority tasks
     # place the array into GLOBAL_CONTEXT.json_object
     Then I should see that <count> tasks are found
     # Done
+    Examples:
+      | course   | count |
+      | ECSE 310 | 1     |
+      | ECSE 429 | 2     |
+      | COMP 251 | 3     |
 
   Scenario: Querying tasks for a class with no high priority incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
@@ -32,9 +37,18 @@ Feature: Querying incomplete HIGH priority tasks
     # delete /projects/project_id/tasks/task['id']
     When I query all the high priority, incomplete task in the todo list
     Then I should see that no tasks are found
+    Examples:
+      | course   | count |
+      | COMP 403 | 0     |
+      | ECSE 311 | 0     |
 
   Scenario: Querying incomplete high priority tasks on an non-existing todo list (Error Flow)
     Given there does not exists a todo list in the system with title <course>
     And there exist a high priority category in the system
     When I query all the high priority, incomplete task in the todo list
     Then the system will inform the user that the todo list does not exist
+    Examples:
+      | course   | count |
+      | 7800     | 0     |
+      | 1433     | 0     |
+      | 2008     | 0     |
