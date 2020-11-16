@@ -25,7 +25,6 @@ Feature: Adding a task to a todo list
      Examples:
       | title                        | course   |
       | new task due soon!! do it!   | ECSE 429 |
-      | new task due soon!! do it!   | ECSE 429 |
 
    Scenario Outline: Adding a task on a todo list that doesn't exist (Error Flow)
     Given there does not exist a todo list in the system with title <course> 
