@@ -11,8 +11,8 @@ from conftest import GLOBAL_CONTEXT
 # scenarios('../features/ChangeDescription.feature')
 # scenarios('../features/CreateTodoList.feature')
 # scenarios('../features/RemoveTodoList.feature')
-
 # scenarios('../features/MarkTask.feature')
+# scenarios('../features/AddTask.feature')
 
 @pytest.fixture(scope='function')
 def context():
@@ -409,82 +409,51 @@ def get_error_response(course):
     else:
         assert False
 
-###############
-## MARK TASK ##
-##############
-@given('the todo list contains the task with title <title>')
-def ensure_todos_list_contains_task_with_title_title(title):
-    urlPost = 'http://localhost:4567/todos'
-    body = {'title': title}
-    r = requests.post(url=urlPost, json = body)
-    GLOBAL_CONTEXT.todo_id = r.json()['id']
-
+@given('the task is part of the todo list')
+def ensure_todos_list_contains_task_with_title():
     linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
     body = {"id": str(GLOBAL_CONTEXT.project_id)}
     r = requests.post(url=linkUrl, json=body)
-
     assert r.status_code == 201
-    
-    linkUrl2 = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
+    linkUrl = f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks'
     body = {"id": str(GLOBAL_CONTEXT.todo_id)}
-    
-    r = requests.post(url=linkUrl2, json=body)
+    r = requests.post(url=linkUrl, json=body)
     assert r.status_code == 201
 
-@given('the current progress of the task with <title> is <progress>')
-def ensure_task_progress_is_incomplete(title, progress):
-    urlPost = f'http://localhost:4567/todos?title={title}'
-    r = requests.get(url=urlPost)
-    print(r.status_code)
-    tid = r.json()['todos'][0]['id']
+@given('the task has done status of <status>')
+def ensure_task_status(status):
     value = False
-    if progress == "Complete":
+    if status == "Complete":
         value = True
     body = {"doneStatus": value}
-    r = requests.post(url=f'http://localhost:4567/todos/{tid}', json = body)
-
+    r = requests.post(url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}', json = body)
     assert r.status_code == 200
 
-@when('I change the progress of the task with title <title> to <newProgress>')
-def change_task_progress_with_title_title(title, newProgress):
-    urlPost = f'http://localhost:4567/todos?title={title}'
-    r = requests.get(url=urlPost)
-    if len(r.json()['todos']) != 0:
-        tid = r.json()['todos'][0]['id']
-        value = False
-        if newProgress == "Complete":
-            value = True
-        body = {"doneStatus": value}
-        r = requests.post(url=f'http://localhost:4567/todos/{tid}', json = body)
-
-        GLOBAL_CONTEXT.status_code = r.status_code
-        
-    if r.status_code != 201:
+@when('I change the done status to <new_status>')
+def change_task_status(new_status):
+    value = False
+    if new_status == "Complete":
+        value = True
+    body = {"doneStatus": value}
+    urlPost = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}'
+    r = requests.post(url=urlPost, json = body)
+    if r.status_code != 200:
         GLOBAL_CONTEXT.response_json = r.json()
     
 
-@then('the progress of the task <title> should be <newProgress>')
-def task_progress_shaould_be_complete(title, newProgress):
-    urlPost = f'http://localhost:4567/todos?title={title}'
-    r = requests.get(url=urlPost)
+@then('the status of the task should be <new_status>')
+def task_progress_shaould_be_complete(new_status):
+    r = requests.get(url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}')
     value = "false"
-    if newProgress == "Complete":
+    if new_status == "Complete":
         value = "true"
     assert r.status_code == 200
     assert r.json()['todos'][0]['doneStatus'] == value
-    
-@given('the todo list does not contain the task with title <title>')
-def ensure_task_does_not_exist_in_todo_list(title):
-    r = requests.get(url='http://localhost:4567/todos')
-    for task in r.json()['todos']:
-        deleteId = task['id']
-        req = requests.delete(url=f'http://localhost:4567/todos/{deleteId}')
-        assert req.status_code == 200
-
 
 @then('the system will inform the user that the task does not exist')
 def inform_user_task_does_not_exist():
-    assert len(GLOBAL_CONTEXT.response_json['todos']) == 0
+    expected_message = 'No such todo entity instance with GUID'
+    assert expected_message in GLOBAL_CONTEXT.response_json['errorMessages'][0] 
 
 # Helper functions
 

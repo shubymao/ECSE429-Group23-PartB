@@ -13,9 +13,9 @@ Feature: Adding a task to a todo list
     Examples:
       | title                        | course   |
       | Edit Draft Report1           | ECSE 429 |
-      # | Study for Midterm Exam       | ECSE 429 |
-      # | Work on the Third Assignment | ECSE 429 |
-      # | new task due soon!! do it!   | ECSE 429 |
+      | Study for Midterm Exam       | ECSE 429 |
+      | Work on the Third Assignment | ECSE 429 |
+      | new task due soon!! do it!   | ECSE 429 |
 
   Scenario Outline: Adding an already existing task to the to do list (Alternate Flow)
     Given there exists a todo list in the system with title <course>
@@ -24,7 +24,7 @@ Feature: Adding a task to a todo list
     Examples:
       | title                      | course   |
       | new task due soon!! do it! | ECSE 429 |
-      # | new task due soon!! do it! | ECSE 429 |
+      | some small report | ECSE 429 |
 
   Scenario Outline: Adding a task on a todo list that doesn't exist (Error Flow)
     Given there does not exist a todo list in the system with title <course>
@@ -32,6 +32,6 @@ Feature: Adding a task to a todo list
     Then the system will inform the user that the todo list with title <course> does not exist
 
     Examples:
-      | title   | course   |
-      | no task | 429      |
+      | title   | course |
+      | no task | 429    |
 

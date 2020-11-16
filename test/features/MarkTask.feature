@@ -7,45 +7,39 @@ Feature: Marking a task on a todo list
 
   Scenario Outline: Marking a completed task as done on a todo list (Normal Flow)
     Given there exists a todo list in the system with title <course>
-    # Post /projects with body {title : course} gets project_id
-    And the todo list contains the task with title <title>
-    # Post /todos with body {title : title} gets todo_id here
-    # Post /todos/todo_id/taskof with body {id: project_id}
-    And the current progress of the task with <title> is <progress>
-    # get /todos?title={title}  receives an json j, tid = j['todos'][0]['id']
-    # post /todos/tid with body {"completeStatus": {TRUE/FALSE:COMPLETE}}
-    # Assert 201
-    When I change the progress of the task with title <title> to <newProgress>
-    # get /todos?title={title}  receives an json j
-    # Assert j['todos'][0]['completeStatus'] == 'true'
-    Then the progress of the task <title> should be <newProgress>
-
+    And the task with title <title> exists
+    And the task has done status of <status>
+    And the task is part of the todo list
+    When I change the done status to <new_status>
+    Then the status of the task should be <new_status>
     Examples:
-      | title              | course   | progress   | newProgress |
-      | Edit Draft Report1 | ECSE 429 | Incomplete | Complete    |
-  # | Study for Midterm Exam       | ECSE 429  | Incomplete   | Complete |
-  # | Work on the Third Assignment | ECSE 429  | Incomplete   | Complete |
+      | title                        | course   | status     | new_status |
+      | Edit Draft Report1           | ECSE 429 | Incomplete | Complete   |
+      | Study for Midterm Exam       | ECSE 429 | Incomplete | Complete   |
+      | Work on the Third Assignment | ECSE 429 | Incomplete | Complete   |
 
   Scenario Outline: Marking an Already-Completed Task as Done (Alternate Flow)
     Given there exists a todo list in the system with title <course>
-    And the todo list contains the task with title <title>
-    And the current progress of the task with <title> is <progress>
-    When I change the progress of the task with title <title> to <newProgress>
-    Then the progress of the task <title> should be <newProgress>
-
+    And the task with title <title> exists
+    And the task has done status of <status>
+    And the task is part of the todo list
+    When I change the done status to <new_status>
+    Then the status of the task should be <new_status>
     Examples:
-      | title                        | course   | progress | newProgress |
-      | Edit Draft Report1           | ECSE 429 | Complete | Complete    |
-      | Study for Midterm Exam       | ECSE 429 | Complete | Complete    |
-      | Work on the Third Assignment | ECSE 429 | Complete | Complete    |
+      | title                        | course   | status   | new_status |
+      | Edit Draft Report1           | ECSE 429 | Complete | Complete   |
+      | Study for Midterm Exam       | ECSE 429 | Complete | Complete   |
+      | Work on the Third Assignment | ECSE 429 | Complete | Complete   |
 
-  Scenario Outline: Marking a Task which does not exist on the to do list (Error Flow)
+  Scenario Outline: Marking a Task which does not exist (Error Flow)
     Given there exists a todo list in the system with title <course>
-    And the todo list does not contain the task with title <title>
-    When I change the progress of the task with title <title> to <newProgress>
+    And the task with id <task_id> does not exists
+    When I change the done status to <new_status>
     Then the system will inform the user that the task does not exist
 
     Examples:
-      | title              | course   | newProgress |
-      | Edit Draft Report1 | ECSE 429 | Incomplete  |
+      | task_id | course   | new_status |
+      | 9999    | ECSE 429 | Incomplete |
+      | 5678    | ECSE 310 | Complete   |
+      | 1256    | ECSE 850 | Incomplete |
 
