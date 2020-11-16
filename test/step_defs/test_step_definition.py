@@ -447,9 +447,9 @@ def ensure_task_progress_is_complete(progress, title):
             return
     assert False
 @when('I change the progress <progress> of the task with title <title> to "Complete"')
-def change_task_progress_with_title_title(title, progress):
+def change_task_progress_with_title_title(progress, title):
     value = True
-    if(progress == "incomplete"):
+    if(progress == "Incomplete"):
         value = False
     url = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
     body = {
