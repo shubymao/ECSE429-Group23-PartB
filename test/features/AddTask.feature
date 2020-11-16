@@ -29,9 +29,9 @@ Feature: Adding a task to a todo list
   Scenario Outline: Adding a task on a todo list that doesn't exist (Error Flow)
     Given there does not exist a todo list in the system with title <course>
     When I add a new task with title <title> to the todo list with title <course>
-    Then the system will inform the user that the todo list does not exist
+    Then the system will inform the user that the todo list with title <course> does not exist
 
     Examples:
       | title   | course   |
-      | no task | ECSE 429 |
+      | no task | 429      |
 

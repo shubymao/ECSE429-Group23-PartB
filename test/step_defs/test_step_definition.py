@@ -347,20 +347,25 @@ def the_system_is_setup():
 ##############
 ## ADD TASK ##
 #############
-@given('there exists a todo list in the system with title <course>')
-def ensure_todo_lists_title_course_exist(course):
-    assert True
-   
 
-@when('I add a new task with title <title> to the todo list with title <course>')
-def add_new_tasks_with_title_title(title, course):
+@given("there exists a todo list in the system with title <course>")
+def ensure_todo_lists_title_course_exist(course):
     body = {
         'title': course
     }
-    r = requests.post(url='http://localhost:4567/todos', body=body)
-    id = r.json()['id']
-    url = 'http://localhost:4567/todos/' + id + '/tasksof'
-    req = requests.post(url=url, body = {'title': title})
+    r = requests.post(url='http://localhost:4567/todos', json=body)
+    GLOBAL_CONTEXT.todo_id = str(r.json()['id'])
+    assert r.status_code == 201
+    assert r.json()['title'] == course
+   
+
+@when("I add a new task with title <title> to the todo list with title <course>")
+def add_new_tasks_with_title_title(title, course):
+
+    urlPost = 'http://localhost:4567/todos/' + GLOBAL_CONTEXT.todo_id + '/tasksof'
+    print(GLOBAL_CONTEXT.todo_id)
+    body2 = {'title': title}
+    req = requests.post(url=urlPost, json=body2 )
     assert req.status_code == 201
     assert req.json()['title']==title
 
@@ -369,21 +374,45 @@ def get_tasks_for_todos_lists(title, course):
     
     r = requests.get('http://localhost:4567/todos')
     id = -1
-    for todo in r.json()['title']:
+    print(r.json()['todos'])
+    for todo in r.json()['todos']:
+        print(todo['title'])
+        print(course)
         if todo['title']== course:
             id = todo['id']
     if id==-1:
         assert False
-    url = 'http://localhost:4567/todos' + id + 'tasksof'
+    url = 'http://localhost:4567/todos/' + id + '/tasksof'
     req = requests.get(url=url)
     assert req.status_code == 200
-    assert req.json()['title'] == title
+    for task in req.json()['projects']:
+        if task['title'] == title:
+            assert True
+            return
+    assert False
     
-# @given(parsers.parse("there does not exist a todo list in the system with title <course>"))
-# @when(parsers.parse("I add a new task with title <title> to the todo list with title <course>"))
-# @then(parsers.parse("the system will inform the user that the todo list does not exist"))
+@given(parsers.parse("there does not exist a todo list in the system with title <course>"))
+def ensure_todo_does_not_exist(course):
+    r = requests.get('http://localhost:4567/todos')
+    for todo in r.json()['todos']:
+        if todo['title'] == course:
+            assert False
+            return
+    assert True
+@then(parsers.parse("the system will inform the user that the todo list with title <course> does not exist"))
+def get_error_response(course):
+    r = requests.get('http://localhost:4567/todos/' + course)
+    error = ['Could not find an instance with todos/' + course] 
+    assert r.status_code == 404
+    assert r.json()['errorMessages'] == error
 
-    
+###############
+## MARK TASK ##
+##############
+@given('the todo list contains the task with title <title>')
+def ensure_todos_list_contains_task_with_title_title(title):
+    assert True
+
 
     
 
