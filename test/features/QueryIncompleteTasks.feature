@@ -37,6 +37,11 @@ Feature: Querying incomplete tasks
     When I query all the incomplete task in the todo list
     Then I should see that no task are found
     # assert len(json['todos']) == 0
+    Examples:
+      | course   | count |
+      | ECSE 429 | 0     |
+      | ECSE 310 | 0     |
+      | COMP 251 | 0     |
 
   Scenario: Querying incomplete tasks on an non-existing todo list (Error Flow)
     Given there does not exists a todo list in the system with title <course>
@@ -46,3 +51,7 @@ Feature: Querying incomplete tasks
     When I query all the incomplete task in the todo list
     Then the system will inform the user that the todo list does not exist
       # check error codes 404 and errorMessages <- check yourself 
+    Examples:
+      | course   | count |
+      | 1011     | 0     |
+      | 2000     | 0     |
