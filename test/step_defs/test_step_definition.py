@@ -1,7 +1,7 @@
 import socket
 
 
-import requests 
+import requests
 import pytest
 from pytest_bdd import scenarios, given, when, then, parsers
 
@@ -369,17 +369,13 @@ def add_new_tasks_with_title_title(title, course):
     if GLOBAL_CONTEXT.todo_id == -1:
         return
     todoPost = 'http://localhost:4567/todos'
-    print(GLOBAL_CONTEXT.todo_id)
     todoBody = {'title': title}
     req = requests.post(url=todoPost, json=todoBody)
     GLOBAL_CONTEXT.todo_id = req.json()['id']
     linkUrl = f'http://localhost:4567/todos/{GLOBAL_CONTEXT.todo_id}/tasksof'
     body = {"id": str(GLOBAL_CONTEXT.project_id)}
-    print(GLOBAL_CONTEXT.project_id + "")
     r = requests.post(url=linkUrl, json=body)
-
     GLOBAL_CONTEXT.status_code = r.status_code
-    print(r.status_code)
     if(r.status_code != 201):
         GLOBAL_CONTEXT.response_json = r.json()
 
@@ -411,7 +407,6 @@ def ensure_todo_does_not_exist(course):
 @then(parsers.parse("the system will inform the user that the todo list with title <course> does not exist"))
 def get_error_response(course):
     expectedMessage = "Could not find thing matching value for id"
-    print(GLOBAL_CONTEXT.response_json['errorMessages'])
     if expectedMessage in GLOBAL_CONTEXT.response_json['errorMessages'][0]:
         assert True
     else:
@@ -527,43 +522,40 @@ def ensure_todo_priority_exists():
 
 @given('there exist <count> high prioirty, incomplete tasks in the todo list')
 def ensure_there_exists_counts_high_priority(count):
-    
+
     ctn = int(count)
     for i in range(ctn):
         title = f'task {i}'
         todo_id = create_task(title)
-        body = {'doneStatus' : False}
-        r = requests.post(url=f'http://localhost:4567/todos/{todo_id}', json = body)
-        req = requests.post(url = f'http://localhost:4567/todos/{todo_id}/tasksof', json = {"id": GLOBAL_CONTEXT.project_id})
-        req2 = requests.post(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json = {"id": todo_id})
+        body = {'doneStatus': False}
+        r = requests.post(
+            url=f'http://localhost:4567/todos/{todo_id}', json=body)
+        req = requests.post(
+            url=f'http://localhost:4567/todos/{todo_id}/tasksof', json={"id": GLOBAL_CONTEXT.project_id})
+        req2 = requests.post(
+            url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json={"id": todo_id})
 
         assign_priority_to_task(todo_id, GLOBAL_CONTEXT.category_id)
-   
+
 
 @when('I query all the high priority, incomplete task in the todo list')
 def query_all_high_priority():
-    r = requests.get(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
-    task =[]
-    print(r.json())
+    r = requests.get(
+        url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
+    task = []
     for todo in r.json()['todos']:
-        print("checking")
-        
         if 'categories' in todo:
-            print("with attribute")
             ans = None
             for category in todo['categories']:
                 if category['id'] == GLOBAL_CONTEXT.category_id:
                     ans = todo
             if ans != None:
                 task.insert(len(task), ans)
-    
+
         else:
-            print(" no attribute ")
-            print(todo)
             continue
     GLOBAL_CONTEXT.json_object = task
-        
-    
+
 
 @given('there exist no high prioirty, incomplete tasks in the todo list')
 def ensure_there_exists_no_high_priority_task():
@@ -573,40 +565,44 @@ def ensure_there_exists_no_high_priority_task():
             for category in todo['categories']:
                 if category['id'] == GLOBAL_CONTEXT.category_id:
                     taskId = todo['id']
-                    req = requests.delete(url=f'http://localhost:4567/todos/{taskId}/taskof/{GLOBAL_CONTEXT.project_id}')
-                    req2 = requests.delete(url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.project_id}/taskof/{taskId}')
+                    req = requests.delete(
+                        url=f'http://localhost:4567/todos/{taskId}/taskof/{GLOBAL_CONTEXT.project_id}')
+                    req2 = requests.delete(
+                        url=f'http://localhost:4567/todos/{GLOBAL_CONTEXT.project_id}/taskof/{taskId}')
                     assert req.status_code == 200
                     assert req2.status_code == 200
                     break
-    
+
 @then(parsers.parse('the system will inform the user that the todo list does not exist'))
 def verify_no_todo_list_response():
     assert True
 
 ######################
-# Query Incomplete task 
+# Query Incomplete task
 #######################
 
 @given('there are <count> tasks in the todo list that are incomplete')
 def ensure_there_are_count_task(count):
     ctn = int(count)
-    print(ctn)
     for i in range(ctn):
         title = f'task {i}'
         todo_id = create_task(title)
-        body = {'doneStatus' : False}
-        r = requests.post(url=f'http://localhost:4567/todos/{todo_id}', json = body)
-        req = requests.post(url = f'http://localhost:4567/todos/{todo_id}/tasksof', json = {"id": GLOBAL_CONTEXT.project_id})
-        req2 = requests.post(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json = {"id": todo_id})
+        body = {'doneStatus': False}
+        r = requests.post(
+            url=f'http://localhost:4567/todos/{todo_id}', json=body)
+        req = requests.post(
+            url=f'http://localhost:4567/todos/{todo_id}/tasksof', json={"id": GLOBAL_CONTEXT.project_id})
+        req2 = requests.post(
+            url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json={"id": todo_id})
 
         assert r.status_code == 200
         assert req.status_code == 201
         assert req2.status_code == 201
 @when('I query all the incomplete task in the todo list')
 def query_all_incompleted_task():
-    r = requests.get(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
-    GLOBAL_CONTEXT.status_code =  r.status_code 
-    print(r.status_code)
+    r = requests.get(
+        url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
+    GLOBAL_CONTEXT.status_code = r.status_code
     if r.status_code == 200:
         GLOBAL_CONTEXT.response_json = r.json()
 
@@ -620,12 +616,14 @@ def verify_count_tasks(count):
 
 @given('there are no tasks in the todo list that are incomplete')
 def ensure_no_incomplete_task_in_todo_list():
-    r = requests.get(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks')
-    print(r.json())
+    r = requests.get(
+        url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks')
     for todo in r.json()['todos']:
         todoId = todo['id']
-        r = requests.delete(url=f'http://localhost:4567/projects{GLOBAL_CONTEXT.project_id}/tasks/{todoId}')
-        req = requests.delete(url=f'http://localhost:4567/todos/{todoId}/tasksof/{GLOBAL_CONTEXT.project_id}')
+        r = requests.delete(
+            url=f'http://localhost:4567/projects{GLOBAL_CONTEXT.project_id}/tasks/{todoId}')
+        req = requests.delete(
+            url=f'http://localhost:4567/todos/{todoId}/tasksof/{GLOBAL_CONTEXT.project_id}')
         assert r.status_code == 200
         assert req.status_code == 200
 
