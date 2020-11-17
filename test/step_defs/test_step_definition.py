@@ -7,16 +7,16 @@ from pytest_bdd import scenarios, given, when, then, parsers
 
 from conftest import GLOBAL_CONTEXT
 
-# scenarios('../features/AssignPriority.feature')
-# scenarios('../features/AdjustPriority.feature')
-# scenarios('../features/ChangeDescription.feature')
-# scenarios('../features/CreateTodoList.feature')
-# scenarios('../features/RemoveTodoList.feature')
-# scenarios('../features/MarkTask.feature')
-# scenarios('../features/AddTask.feature')
-# scenarios('../features/RemoveTask.feature')
+scenarios('../features/AssignPriority.feature')
+scenarios('../features/AdjustPriority.feature')
+scenarios('../features/ChangeDescription.feature')
+scenarios('../features/CreateTodoList.feature')
+scenarios('../features/RemoveTodoList.feature')
+scenarios('../features/MarkTask.feature')
+scenarios('../features/AddTask.feature')
+scenarios('../features/RemoveTask.feature')
 scenarios('../features/QueryIncompleteHighPriorityTasks.feature')
-# scenarios('../features/QueryIncompleteTasks.feature')
+scenarios('../features/QueryIncompleteTasks.feature')
 
 @pytest.fixture(scope='function')
 def context():
@@ -605,7 +605,8 @@ def verify_count_tasks(count):
     if GLOBAL_CONTEXT.response_json == None and count == 0:
         assert True
     if GLOBAL_CONTEXT.response_json != None:
-        assert len(GLOBAL_CONTEXT.response_json['todos']) == int(count)
+        if 'todos' in GLOBAL_CONTEXT.response_json:
+            assert len(GLOBAL_CONTEXT.response_json['todos']) == int(count)
 
 @given('there are no tasks in the todo list that are incomplete')
 def ensure_no_incomplete_task_in_todo_list():
