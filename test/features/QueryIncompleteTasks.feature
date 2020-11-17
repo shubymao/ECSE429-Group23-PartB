@@ -43,7 +43,7 @@ Feature: Querying incomplete tasks
       | ECSE 310 | 0     |
       | COMP 251 | 0     |
 
-  Scenario: Querying incomplete tasks on an non-existing todo list (Error Flow)
+  Scenario Outline: Querying incomplete tasks on an non-existing todo list (Error Flow)
     Given there does not exist a todo list in the system with title <course>
     # r = get projects?title=course
     # for project in r.json()['projects']: <- this technically should be empty but just verification

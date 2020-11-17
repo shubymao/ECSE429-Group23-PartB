@@ -42,7 +42,7 @@ Feature: Querying incomplete HIGH priority tasks
       | COMP 403 | 0     |
       | ECSE 311 | 0     |
 
-  Scenario: Querying incomplete high priority tasks on an non-existing todo list (Error Flow)
+  Scenario Outline: Querying incomplete high priority tasks on an non-existing todo list (Error Flow)
     Given there does not exist a todo list in the system with title <course>
     And there exist a high priority category in the system
     When I query all the high priority, incomplete task in the todo list
