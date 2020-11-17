@@ -527,14 +527,22 @@ def ensure_todo_priority_exists():
 
 @given('there exist <count> high prioirty, incomplete tasks in the todo list')
 def ensure_there_exists_counts_high_priority(count):
-    r = requests.get(url=f'http://localhost:4567/todos?doneStatus=false')
-    for todo in r.json()['todos']:
-        assign_priority_to_task(todo['id'], GLOBAL_CONTEXT.category_id)
+    
+    ctn = int(count)
+    for i in range(ctn):
+        title = f'task {i}'
+        todo_id = create_task(title)
+        body = {'doneStatus' : False}
+        r = requests.post(url=f'http://localhost:4567/todos/{todo_id}', json = body)
+        req = requests.post(url = f'http://localhost:4567/todos/{todo_id}/tasksof', json = {"id": GLOBAL_CONTEXT.project_id})
+        req2 = requests.post(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks', json = {"id": todo_id})
+
+        assign_priority_to_task(todo_id, GLOBAL_CONTEXT.category_id)
    
 
 @when('I query all the high priority, incomplete task in the todo list')
 def query_all_high_priority():
-    r = requests.get(url=f'http://localhost:4567/todos?doneStatus=false')
+    r = requests.get(url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
     task =[]
     print(r.json())
     for todo in r.json()['todos']:
