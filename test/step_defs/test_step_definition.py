@@ -8,15 +8,14 @@ from pytest_bdd import scenarios, given, when, then, parsers
 from conftest import GLOBAL_CONTEXT
 
 
-# scenarios('../features/AssignPriority.feature')
-# scenarios('../features/AdjustPriority.feature')
-# scenarios('../features/ChangeDescription.feature')
-# scenarios('../features/CreateTodoList.feature')
-# scenarios('../features/RemoveTodoList.feature')
-# scenarios('../features/MarkTask.feature')
-# scenarios('../features/AddTask.feature')
-# scenarios('../features/RemoveTask.feature')
-
+scenarios('../features/AssignPriority.feature')
+scenarios('../features/AdjustPriority.feature')
+scenarios('../features/ChangeDescription.feature')
+scenarios('../features/CreateTodoList.feature')
+scenarios('../features/RemoveTodoList.feature')
+scenarios('../features/MarkTask.feature')
+scenarios('../features/AddTask.feature')
+scenarios('../features/RemoveTask.feature')
 scenarios('../features/QueryIncompleteHighPriorityTasks.feature')
 scenarios('../features/QueryIncompleteTasks.feature')
 
@@ -543,6 +542,7 @@ def query_all_high_priority():
     r = requests.get(
         url=f'http://localhost:4567/projects/{GLOBAL_CONTEXT.project_id}/tasks?doneStatus=false')
     task = []
+    print(r.json())
     for todo in r.json()['todos']:
         if 'categories' in todo:
             ans = None
@@ -554,7 +554,8 @@ def query_all_high_priority():
 
         else:
             continue
-    GLOBAL_CONTEXT.json_object = task
+    
+    GLOBAL_CONTEXT.response_json = {'todos': task}
 
 
 @given('there exist no high prioirty, incomplete tasks in the todo list')

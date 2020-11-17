@@ -12,6 +12,7 @@ class GLOBAL_CONTEXT:
     category_id = None
     json_object = None
     response_json = None
+    high_priority_response = None
     status_code = None
 
 

@@ -23,9 +23,9 @@ Feature: Querying incomplete HIGH priority tasks
     # Done
     Examples:
       | course   | count |
-      | ECSE 310 | 2     |
-      | ECSE 429 | 3     |
-      | COMP 251 | 4     |
+      | ECSE 310 | 1     |
+      | ECSE 429 | 2     |
+      | COMP 251 | 3     |
 
   Scenario Outline: Querying tasks for a class with no high priority incomplete task (Alternate Flow)
     Given there exists a todo list in the system with title <course>
