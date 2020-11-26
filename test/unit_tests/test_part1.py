@@ -1,5 +1,4 @@
 import requests
-import json
 
 from test.unit_tests.support.assertions import *
 
