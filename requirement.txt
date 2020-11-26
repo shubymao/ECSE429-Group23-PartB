@@ -13,9 +13,11 @@ parse==1.18.0
 parse-type==0.5.2
 pluggy==0.13.1
 py==1.9.0
+py-cpuinfo==7.0.0
 pyparsing==2.4.7
 pytest==6.1.1
 pytest-bdd==4.0.1
+pytest-benchmark==3.2.3
 pytest-randomly==3.4.1
 pytest-timeout==1.4.2
 requests==2.24.0
