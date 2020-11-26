@@ -15,7 +15,6 @@ class GLOBAL_CONTEXT:
     high_priority_response = None
     status_code = None
 
-
 @pytest.fixture(autouse=True, scope="function")
 def setup():
     # Attempts to start the process.
