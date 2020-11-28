@@ -1,52 +1,78 @@
-import requests
 import time
+
+import requests
 
 
 def test_add_todo():
-    size = 0
-    for i in [10, 100, 1000, 10000]:
-        __todo_adder_helper(i - size)
-        size = i
-        start_time = time.time()
-        for _ in range(500):
-            __add_todo()
-        end_time = time.time()
-        delta = end_time - start_time
-        print(f"Add size {i}: {delta}")
+    # Empties the file for each test run, in order to generate new data
+    open("test_add_todo.csv", "w").close()
+    f = open("test_add_todo.csv", "a")
+    for i in range(10000):
+        start = time.time()
+        requests.post("http://localhost:4567/todos", json={"title": "test"},
+                      headers={'content-type': 'application/json'})
+        end = time.time()
+        delta = end - start
 
-    assert False
+        f.write(f"{i},{delta}\n")
+    f.close()
+
 
 def test_delete_todo():
-    size = 0
-    for i in [10, 100, 1000, 10000]:
-        __todo_adder_helper(i - size)
-        size = i
-        start_time = time.time()
-        __delete_todo(size - 1)
-        end_time = time.time()
-        delta = end_time - start_time
-        print(f"Delete size {i}: {delta}")
+    # Empties the file for each test run, in order to generate new data
+    open("test_delete_todo.csv", "w").close()
+    f = open("test_delete_todo.csv", "a")
+    for i in range(10000):
+        # First request is to arm the test with data
+        requests.post("http://localhost:4567/todos", json={"title": "test"},
+                      headers={'content-type': 'application/json'})
+        # Second request is to insert something we know exists so we can delete it.
+        r = requests.post("http://localhost:4567/todos", json={"title": "test"},
+                          headers={'content-type': 'application/json'})
+        id = None
+        try:
+            id = r.json()['id']
+        except KeyError:
+            assert False
 
-    assert False
+        start = time.time()
+        requests.delete(f"http://localhost:4567/todos/{id}")
+        end = time.time()
+        delta = end - start
+
+        f.write(f"{i},{delta}\n")
+    f.close()
 
 
-# Adds a to do entry without the overhead of randomization or whatnot.
-def __add_todo():
-    requests.post("http://localhost:4567/todos", json={"title": "test add random items"},
-                  headers={'content-type': 'application/json'})
+def test_modify_todo():
+    # Empties the file for each test run, in order to generate new data
+    open("test_modify_todo.csv", "w").close()
+    f = open("test_modify_todo.csv", "a")
+    for i in range(10000):
+        # First request is to arm the test with data
+        requests.post("http://localhost:4567/todos", json={"title": "test"},
+                      headers={'content-type': 'application/json'})
+        # Second request is to insert something we know exists so we can modify it.
+        r = requests.post("http://localhost:4567/todos", json={"title": "test"},
+                          headers={'content-type': 'application/json'})
+        id = None
+        try:
+            id = r.json()['id']
+        except KeyError:
+            assert False
 
+        start = time.time()
+        requests.post(f"http://localhost:4567/todos/{id}",
+                      json={
+                          "title": "test tasks amended again",
+                          "doneStatus": False,
+                          "description": "Something useful!"
+                      })
+        end = time.time()
+        delta = end - start
 
-# Deletes a to do entry
-def __delete_todo(id):
-    assert 200 == requests.delete(f"http://localhost:4567/todos/{id}").status_code
-
-
-# Adds a to do list to the REST API Server
-def __todo_adder_helper(amount):
-    # TODO: Generate random_string
-    for _ in range(amount):
-        assert 201 == requests.post("http://localhost:4567/todos", json={"title": "test"},
-                      headers={'content-type': 'application/json'}).status_code
+        f.write(f"{i},{delta}\n")
+    f.close()
 
 # def test_categories_performance():
 #     raise NotImplemented
