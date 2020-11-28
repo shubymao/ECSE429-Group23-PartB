@@ -140,9 +140,10 @@ def __get_change_project_time():
         'description': __get_random_string(10)
     }
     time_before = time.time()
-    requests.post('http://localhost:4567/projects', json=new_body,
+    r = requests.post('http://localhost:4567/projects', json=new_body,
                   headers={'content-type': 'application/json'})
     time_after = time.time()
+    assert r.status_code == 200
     r = requests.delete(f'http://localhost:4567/projects/{project_id}')
     assert r.status_code == 200 # delete the created project to restore to remove side effect.
     return time_after - time_before
