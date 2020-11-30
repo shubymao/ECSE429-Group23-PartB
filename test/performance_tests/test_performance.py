@@ -10,25 +10,32 @@ SAMPLE_SIZE = 100
 
 
 def test_add_todo():
+    LOGGER.info('Performance Test For Add todo')
     # Empties the file for each test run, in order to generate new data
     open("test_add_todo.csv", "w").close()
     f = open("test_add_todo.csv", "a")
-    for i in range(10000):
+    for i in range(10001):
         start = time.time()
         requests.post("http://localhost:4567/todos", json={"title": "test"},
                       headers={'content-type': 'application/json'})
         end = time.time()
         delta = end - start
 
+        # Power of 10, log the time
+        if i in [10, 100, 1000, 10000]:
+            LOGGER.info(f'Add Test For {i} todos in the System: {delta}s')
+
         f.write(f"{i},{delta}\n")
     f.close()
+    LOGGER.info('--------------------------------')
 
 
 def test_delete_todo():
+    LOGGER.info('Performance Test For Delete todo')
     # Empties the file for each test run, in order to generate new data
     open("test_delete_todo.csv", "w").close()
     f = open("test_delete_todo.csv", "a")
-    for i in range(10000):
+    for i in range(10001):
         # First request is to arm the test with data
         requests.post("http://localhost:4567/todos", json={"title": "test"},
                       headers={'content-type': 'application/json'})
@@ -45,16 +52,21 @@ def test_delete_todo():
         requests.delete(f"http://localhost:4567/todos/{id}")
         end = time.time()
         delta = end - start
+        # Power of 10, log the time
+        if i in [10, 100, 1000, 10000]:
+            LOGGER.info(f'Delete Test For {i} todos in the System: {delta}s')
 
         f.write(f"{i},{delta}\n")
     f.close()
+    LOGGER.info('--------------------------------')
 
 
 def test_modify_todo():
+    LOGGER.info('Performance Test For Modify todo')
     # Empties the file for each test run, in order to generate new data
     open("test_modify_todo.csv", "w").close()
     f = open("test_modify_todo.csv", "a")
-    for i in range(10000):
+    for i in range(10001):
         # First request is to arm the test with data
         requests.post("http://localhost:4567/todos", json={"title": "test"},
                       headers={'content-type': 'application/json'})
@@ -76,9 +88,13 @@ def test_modify_todo():
                       })
         end = time.time()
         delta = end - start
+        # Power of 10, log the time
+        if i in [10, 100, 1000, 10000]:
+            LOGGER.info(f'Delete Test For {i} todos in the System: {delta}s')
 
         f.write(f"{i},{delta}\n")
     f.close()
+    LOGGER.info('--------------------------------')
 
 
 def test_performance_add_project():
