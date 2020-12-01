@@ -112,6 +112,21 @@ def test_performance_add_project():
         avg_time = time / SAMPLE_SIZE
         LOGGER.info(f'Add Test For {i} Projects in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
+    
+@pytest.mark.noautosetup
+def test_performance_add_categories():
+    size = 0
+    LOGGER.info('Performance Test For Add Categories')
+    for i in [10, 100, 1000, 10000]:
+        for _ in range(i - size):
+            __add_categories()  # create up to i categories
+        size = i
+        time = 0
+        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
+            time = time + __get_add_categories_time()
+        avg_time = time / SAMPLE_SIZE
+        LOGGER.info(f'Add Test For {i} Categories in the System: {avg_time}s')
+    LOGGER.info('--------------------------------')
 
 @pytest.mark.noautosetup
 def test_performance_change_project():
@@ -129,6 +144,21 @@ def test_performance_change_project():
     LOGGER.info('--------------------------------')
 
 @pytest.mark.noautosetup
+def test_performance_change_categories():
+    size = 0
+    LOGGER.info('Performance Test For Change Categories')
+    for i in [10, 100, 1000, 10000]:
+        for _ in range(i - size):
+            __add_categories()  # create up to i project
+        size = i
+        time = 0
+        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
+            time = time + __get_change_categories_time()
+        avg_time = time / SAMPLE_SIZE
+        LOGGER.info(f'Change Test For {i} Categories in the System: {avg_time}s')
+    LOGGER.info('--------------------------------')
+
+@pytest.mark.noautosetup
 def test_performance_delete_project():
     size = 0
     LOGGER.info('Performance Test For Delete Project')
@@ -141,6 +171,21 @@ def test_performance_delete_project():
             time = time + __get_delete_project_time()
         avg_time = time / SAMPLE_SIZE
         LOGGER.info(f'Delete Test For {i} Projects in the System: {avg_time}s')
+    LOGGER.info('--------------------------------')
+
+@pytest.mark.noautosetup
+def test_performance_delete_categories():
+    size = 0
+    LOGGER.info('Performance Test For Delete Categories')
+    for i in [10, 100, 1000, 10000]:
+        for _ in range(i - size):
+            __add_categories()  # create up to i categories
+        size = i
+        time = 0
+        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
+            time = time + __get_delete_categories_time()
+        avg_time = time / SAMPLE_SIZE
+        LOGGER.info(f'Delete Test For {i} Categories in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
 
