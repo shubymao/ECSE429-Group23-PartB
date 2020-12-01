@@ -148,6 +148,14 @@ def __add_project():
                       headers={'content-type': 'application/json'})
     assert r.status_code == 201
 
+def __add_categories():
+    title = __get_random_string(6)
+    description = __get_random_string(10)
+    r = requests.post("http://localhost:4567/categories", json={"title": title, "description": description},
+                      headers={'content-type': 'application/json'})
+    assert r.status_code == 201
+
+
 
 def __get_add_project_time():
     title = 'sample title'
@@ -161,6 +169,17 @@ def __get_add_project_time():
     assert r.status_code == 200  # delete the created project to restore to remove side effect.
     return time_after - time_before
 
+def __get_add_categories_time():
+    title = 'sample title'
+    time_before = time.time()
+    r = requests.post('http://localhost:4567/categories', json={"title": title},
+                      headers={'content-type': 'application/json'})
+    time_after = time.time()
+    assert r.status_code == 201
+    project_id = str(r.json()['id'])
+    r = requests.delete(f'http://localhost:4567/categories/{project_id}')
+    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    return time_after - time_before
 
 def __get_delete_project_time():
     title = 'sample title'
@@ -175,6 +194,18 @@ def __get_delete_project_time():
     assert r.status_code == 200  # delete the created project to restore to remove side effect.
     return time_after - time_before
 
+def __get_delete_categories_time():
+    title = 'sample title'
+    # Create a sample categories
+    r = requests.post('http://localhost:4567/categories', json={"title": title},
+                      headers={'content-type': 'application/json'})
+    assert r.status_code == 201
+    project_id = str(r.json()['id'])
+    time_before = time.time()
+    r = requests.delete(f'http://localhost:4567/categories/{project_id}')
+    time_after = time.time()
+    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    return time_after - time_before
 
 def __get_change_project_time():
     title = 'sample title'
@@ -198,6 +229,25 @@ def __get_change_project_time():
     assert r.status_code == 200  # delete the created project to restore to remove side effect.
     return time_after - time_before
 
+def __get_change_categories_time():
+    title = 'sample title'
+    # Create a sample categories
+    r = requests.post('http://localhost:4567/categories', json={"title": title},
+                      headers={'content-type': 'application/json'})
+    assert r.status_code == 201
+    project_id = str(r.json()['id'])
+    new_body = {
+        'title': __get_random_string(6),
+        'description': __get_random_string(10)
+    }
+    time_before = time.time()
+    r = requests.post(f'http://localhost:4567/categories/{project_id}', json=new_body,
+                      headers={'content-type': 'application/json'})
+    time_after = time.time()
+    assert r.status_code == 200
+    r = requests.delete(f'http://localhost:4567/categories/{project_id}')
+    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    return time_after - time_before
 
 def __get_random_string(length):
     letters = string.ascii_lowercase
