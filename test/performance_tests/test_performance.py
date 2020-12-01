@@ -112,21 +112,6 @@ def test_performance_add_project():
         avg_time = time / SAMPLE_SIZE
         LOGGER.info(f'Add Test For {i} Projects in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
-    
-@pytest.mark.noautosetup
-def test_performance_add_categories():
-    size = 0
-    LOGGER.info('Performance Test For Add Categories')
-    for i in [10, 100, 1000, 10000]:
-        for _ in range(i - size):
-            __add_categories()  # create up to i categories
-        size = i
-        time = 0
-        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
-            time = time + __get_add_categories_time()
-        avg_time = time / SAMPLE_SIZE
-        LOGGER.info(f'Add Test For {i} Categories in the System: {avg_time}s')
-    LOGGER.info('--------------------------------')
 
 @pytest.mark.noautosetup
 def test_performance_change_project():
@@ -141,21 +126,6 @@ def test_performance_change_project():
             time = time + __get_change_project_time()
         avg_time = time / SAMPLE_SIZE
         LOGGER.info(f'Change Test For {i} Projects in the System: {avg_time}s')
-    LOGGER.info('--------------------------------')
-
-@pytest.mark.noautosetup
-def test_performance_change_categories():
-    size = 0
-    LOGGER.info('Performance Test For Change Categories')
-    for i in [10, 100, 1000, 10000]:
-        for _ in range(i - size):
-            __add_categories()  # create up to i project
-        size = i
-        time = 0
-        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
-            time = time + __get_change_categories_time()
-        avg_time = time / SAMPLE_SIZE
-        LOGGER.info(f'Change Test For {i} Categories in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
 @pytest.mark.noautosetup
@@ -174,6 +144,37 @@ def test_performance_delete_project():
     LOGGER.info('--------------------------------')
 
 @pytest.mark.noautosetup
+def test_performance_add_categories():
+    size = 0
+    LOGGER.info('Performance Test For Add Categories')
+    for i in [10, 100, 1000, 10000]:
+        for _ in range(i - size):
+            __add_categories()  # create up to i categories
+        size = i
+        time = 0
+        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
+            time = time + __get_add_categories_time()
+        avg_time = time / SAMPLE_SIZE
+        LOGGER.info(f'Add Test For {i} Categories in the System: {avg_time}s')
+    LOGGER.info('--------------------------------')
+
+@pytest.mark.noautosetup
+def test_performance_change_categories():
+    size = 0
+    LOGGER.info('Performance Test For Change Categories')
+    for i in [10, 100, 1000, 10000]:
+        for _ in range(i - size):
+            __add_categories()  # create up to i project
+        size = i
+        time = 0
+        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
+            time = time + __get_change_categories_time()
+        avg_time = time / SAMPLE_SIZE
+        LOGGER.info(
+            f'Change Test For {i} Categories in the System: {avg_time}s')
+    LOGGER.info('--------------------------------')
+
+@pytest.mark.noautosetup
 def test_performance_delete_categories():
     size = 0
     LOGGER.info('Performance Test For Delete Categories')
@@ -185,7 +186,8 @@ def test_performance_delete_categories():
         for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
             time = time + __get_delete_categories_time()
         avg_time = time / SAMPLE_SIZE
-        LOGGER.info(f'Delete Test For {i} Categories in the System: {avg_time}s')
+        LOGGER.info(
+            f'Delete Test For {i} Categories in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
 
@@ -203,7 +205,6 @@ def __add_categories():
     assert r.status_code == 201
 
 
-
 def __get_add_project_time():
     title = 'sample title'
     time_before = time.time()
@@ -213,7 +214,8 @@ def __get_add_project_time():
     assert r.status_code == 201
     project_id = str(r.json()['id'])
     r = requests.delete(f'http://localhost:4567/projects/{project_id}')
-    assert r.status_code == 200  # delete the created project to restore to remove side effect.
+    # delete the created project to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_add_categories_time():
@@ -225,7 +227,8 @@ def __get_add_categories_time():
     assert r.status_code == 201
     project_id = str(r.json()['id'])
     r = requests.delete(f'http://localhost:4567/categories/{project_id}')
-    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    # delete the created categories to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_delete_project_time():
@@ -238,7 +241,8 @@ def __get_delete_project_time():
     time_before = time.time()
     r = requests.delete(f'http://localhost:4567/projects/{project_id}')
     time_after = time.time()
-    assert r.status_code == 200  # delete the created project to restore to remove side effect.
+    # delete the created project to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_delete_categories_time():
@@ -251,7 +255,8 @@ def __get_delete_categories_time():
     time_before = time.time()
     r = requests.delete(f'http://localhost:4567/categories/{project_id}')
     time_after = time.time()
-    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    # delete the created categories to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_change_project_time():
@@ -273,7 +278,8 @@ def __get_change_project_time():
     time_after = time.time()
     assert r.status_code == 200
     r = requests.delete(f'http://localhost:4567/projects/{project_id}')
-    assert r.status_code == 200  # delete the created project to restore to remove side effect.
+    # delete the created project to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_change_categories_time():
@@ -293,7 +299,8 @@ def __get_change_categories_time():
     time_after = time.time()
     assert r.status_code == 200
     r = requests.delete(f'http://localhost:4567/categories/{project_id}')
-    assert r.status_code == 200  # delete the created categories to restore to remove side effect.
+    # delete the created categories to restore to remove side effect.
+    assert r.status_code == 200
     return time_after - time_before
 
 def __get_random_string(length):
