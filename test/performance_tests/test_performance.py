@@ -2,6 +2,7 @@ import logging
 import random
 import string
 import time
+import pytest
 
 import requests
 
@@ -9,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 SAMPLE_SIZE = 100
 
 
+@pytest.mark.noautosetup
 def test_add_todo():
     LOGGER.info('Performance Test For Add todo')
     # Empties the file for each test run, in order to generate new data
@@ -29,7 +31,7 @@ def test_add_todo():
     f.close()
     LOGGER.info('--------------------------------')
 
-
+@pytest.mark.noautosetup
 def test_delete_todo():
     LOGGER.info('Performance Test For Delete todo')
     # Empties the file for each test run, in order to generate new data
@@ -60,7 +62,7 @@ def test_delete_todo():
     f.close()
     LOGGER.info('--------------------------------')
 
-
+@pytest.mark.noautosetup
 def test_modify_todo():
     LOGGER.info('Performance Test For Modify todo')
     # Empties the file for each test run, in order to generate new data
@@ -96,7 +98,7 @@ def test_modify_todo():
     f.close()
     LOGGER.info('--------------------------------')
 
-
+@pytest.mark.noautosetup
 def test_performance_add_project():
     size = 0
     LOGGER.info('Performance Test For Add Project')
@@ -111,7 +113,7 @@ def test_performance_add_project():
         LOGGER.info(f'Add Test For {i} Projects in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
-
+@pytest.mark.noautosetup
 def test_performance_change_project():
     size = 0
     LOGGER.info('Performance Test For Change Project')
@@ -126,7 +128,7 @@ def test_performance_change_project():
         LOGGER.info(f'Change Test For {i} Projects in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
-
+@pytest.mark.noautosetup
 def test_performance_delete_project():
     size = 0
     LOGGER.info('Performance Test For Delete Project')
