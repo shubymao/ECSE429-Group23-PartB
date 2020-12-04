@@ -9,7 +9,6 @@ import requests
 LOGGER = logging.getLogger(__name__)
 SAMPLE_SIZE = 100
 
-
 @pytest.mark.noautosetup
 def test_add_todo():
     LOGGER.info('Performance Test For Add todo')
@@ -31,7 +30,7 @@ def test_add_todo():
     f.close()
     LOGGER.info('--------------------------------')
 
-@pytest.mark.noautosetup
+# @pytest.mark.noautosetup
 def test_delete_todo():
     LOGGER.info('Performance Test For Delete todo')
     # Empties the file for each test run, in order to generate new data
@@ -62,7 +61,7 @@ def test_delete_todo():
     f.close()
     LOGGER.info('--------------------------------')
 
-@pytest.mark.noautosetup
+# @pytest.mark.noautosetup
 def test_modify_todo():
     LOGGER.info('Performance Test For Modify todo')
     # Empties the file for each test run, in order to generate new data
@@ -102,18 +101,20 @@ def test_modify_todo():
 def test_performance_add_project():
     size = 0
     LOGGER.info('Performance Test For Add Project')
-    for i in [10, 100, 1000, 10000]:
-        for _ in range(i - size):
-            __add_project()  # create up to i project
-        size = i
-        time = 0
-        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
-            time = time + __get_add_project_time()
-        avg_time = time / SAMPLE_SIZE
-        LOGGER.info(f'Add Test For {i} Projects in the System: {avg_time}s')
-    LOGGER.info('--------------------------------')
+    open("test_add_project.csv", "w").close()
+    f = open("test_add_project.csv", "a")
+    for i in range(10001):
 
-@pytest.mark.noautosetup
+        __add_project()  # create up to i project
+        time = __get_add_project_time()
+        f.write(f"{i},{time}\n")
+        if i in [10, 100, 1000, 10000]:
+            LOGGER.info(f'Add Test For {i} Projects in the System: {time}s')
+    LOGGER.info('--------------------------------')
+    f.close()
+
+
+# @pytest.mark.noautosetup
 def test_performance_change_project():
     size = 0
     LOGGER.info('Performance Test For Change Project')
@@ -128,7 +129,7 @@ def test_performance_change_project():
         LOGGER.info(f'Change Test For {i} Projects in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
-@pytest.mark.noautosetup
+# @pytest.mark.noautosetup
 def test_performance_delete_project():
     size = 0
     LOGGER.info('Performance Test For Delete Project')
@@ -145,20 +146,20 @@ def test_performance_delete_project():
 
 @pytest.mark.noautosetup
 def test_performance_add_categories():
-    size = 0
-    LOGGER.info('Performance Test For Add Categories')
-    for i in [10, 100, 1000, 10000]:
-        for _ in range(i - size):
-            __add_categories()  # create up to i categories
-        size = i
-        time = 0
-        for _ in range(SAMPLE_SIZE):  # test 500 time to get the average value
-            time = time + __get_add_categories_time()
-        avg_time = time / SAMPLE_SIZE
-        LOGGER.info(f'Add Test For {i} Categories in the System: {avg_time}s')
-    LOGGER.info('--------------------------------')
 
-@pytest.mark.noautosetup
+    LOGGER.info('Performance Test For Add Categories')
+    open("test_add_category.csv", "w").close()
+    f = open("test_add_category.csv", "a")
+    for i in range(10001):
+        __add_categories()  # create up to i categories
+        time = __get_add_categories_time()
+        f.write(f"{i},{time}\n")        # Power of 10, log the time
+        if i in [10, 100, 1000, 10000]:
+            LOGGER.info(f'Add Test For {i} Categories in the System: {time}s')
+    LOGGER.info('--------------------------------')
+    f.close()
+
+# @pytest.mark.noautosetup
 def test_performance_change_categories():
     size = 0
     LOGGER.info('Performance Test For Change Categories')
@@ -174,7 +175,7 @@ def test_performance_change_categories():
             f'Change Test For {i} Categories in the System: {avg_time}s')
     LOGGER.info('--------------------------------')
 
-@pytest.mark.noautosetup
+# @pytest.mark.noautosetup
 def test_performance_delete_categories():
     size = 0
     LOGGER.info('Performance Test For Delete Categories')

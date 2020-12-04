@@ -5,6 +5,7 @@ import requests
 import socket
 import time
 
+
 class GLOBAL_CONTEXT:
     todo_id = None
     task_id = None
@@ -15,9 +16,10 @@ class GLOBAL_CONTEXT:
     high_priority_response = None
     status_code = None
 
+
 @pytest.fixture(autouse=True, scope="function")
 def setup(request):
-    if not 'noautosetup' in request.keywords:
+    if 'noautosetup' not in request.keywords:
         # Attempts to start the process.
         subprocess.Popen(['java', '-jar', os.environ['JAR_PATH']])
         # Start timer for timeout which is current time + 3 seconds for timeout
@@ -30,7 +32,7 @@ def setup(request):
     # Loop terminates here because the socket connection has opened. Start testing.
     yield
 
-    if not 'noautosetup' in request.keywords:
+    if 'noautosetup' not in request.keywords:
         # This section corresponds to post-test teardown.
         try:
             requests.get("http://localhost:4567/shutdown")
